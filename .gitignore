@@ -2,3 +2,4 @@
 /design
 /docker/mysql/dbdata/*
 /docker/redis/appendonlydir/*
+websocket/vendor/*

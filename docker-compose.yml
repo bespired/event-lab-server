@@ -4,6 +4,7 @@ networks:
 
 services:
   traefik:
+    container_name: docker.traefik
     restart: unless-stopped
     image: traefik:v3
     command:
@@ -13,6 +14,8 @@ services:
       - --entrypoints.web.address=:80
       - --entrypoints.websecure.address=:443
       - --entrypoints.websecure.http.tls=true
+      - --entryPoints.ws.address=:8081
+      - --entryPoints.wss.address=:8083
       - --providers.file.directory=/etc/traefik/dynamic
       - --providers.file.watch=true
     labels:
@@ -24,6 +27,8 @@ services:
       - "80:80"
       - "443:443"
       - "8080:8080"
+      - "9091:9001"
+
     volumes:
       # Mount the directory containing the certs
       - ./docker/traefik/:/certs/
@@ -92,6 +97,35 @@ services:
       - traefik.http.routers.public.priority=10
       - traefik.http.routers.public.tls=true
 
+  ratchet:
+    build:
+      context: ./docker/apache
+      dockerfile: ./ratchet.dockerfile
+
+    restart: unless-stopped
+    container_name: docker.ratchet
+    tty: true
+    ports:
+      - "9001:9001"
+    networks:
+      - docker.network
+    volumes:
+      - ./websocket:/var/www/public_html/
+    labels:
+      - traefik.enable=true
+      # backend port
+      - traefik.http.services.ws-service.loadbalancer.server.port=9001
+      # ws
+      - traefik.http.routers.ws-service-ws.rule=Host(`eventlab.com`)
+      - traefik.http.routers.ws-service-ws.entrypoints=ws
+      # wss
+      # - traefik.http.routers.ws-service-wss.rule=Host(`eventlab.com`)
+      # - traefik.http.routers.ws-service-wss.entrypoints=wss
+      # - traefik.http.routers.ws-service-wss.tls=true
+      # - traefik.http.routers.ws-service-wss.tls.certresolver=dns
+      - traefik.http.routers.tracker.priority=100
+      - traefik.http.routers.tracker.tls=true
+
   mysql:
     image: arm64v8/mysql:latest
     platform: linux/arm64
@@ -128,4 +162,5 @@ services:
 
     environment:
       ALLOW_EMPTY_PASSWORD: ${REDIS_ALLOW_EMPTY_PASSWORD:-no}
+
 
