@@ -43,10 +43,10 @@ RUN a2ensite default-ssl
 
 RUN echo "ServerName ratchet" >> /etc/apache2/apache2.conf
 
-ENV APP_ROOT=/var/www
+ENV APP_ROOT=/var/www/html
 
 ENV SERVER_NAME=localhost
-ENV DOCUMENT_ROOT=${APP_ROOT}/websocket
+ENV DOCUMENT_ROOT=${APP_ROOT}
 
 ENV APACHE_LOG_DIR=${APP_ROOT}/docker/apache/logs
 ENV APACHE_RUN_GROUP=www-data
@@ -69,11 +69,14 @@ COPY ./httpd.conf /usr/local/apache2/conf/httpd.conf
 COPY ./public-html.conf /etc/apache2/sites-enabled/000-default.conf
 COPY ./public-ssl.conf  /etc/apache2/sites-enabled/default-ssl.conf
 
+# RUN php /usr/local/bin/composer require cboden/ratchet
+
+
 # Expose ports
 EXPOSE 80
 EXPOSE 443
 EXPOSE 12345
 
 # Run entrypoint
-# CMD ["docker-entrypoint"]
+CMD ["docker-entrypoint"]
 

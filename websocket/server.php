@@ -1,14 +1,41 @@
 <?php
-
 use MyApp\Chat;
+use Ratchet\Http\HttpServer;
 use Ratchet\Server\IoServer;
+use Ratchet\WebSocket\WsServer;
 
-    require __DIR__ . '/vendor/autoload.php';
+require __DIR__ . '/vendor/autoload.php';
 
-    echo "Server started\n";
+echo "Server started\n";
 
-    $server = IoServer::factory(
-        new Chat(), 9001
-    );
+$loop = React\EventLoop\Factory::create();
 
-    $server->run();
+$webSock = new React\Socket\Server('0.0.0.0:9001', $loop);
+$webSock = new React\Socket\SecureServer($webSock, $loop, [
+	'local_cert' => '/certs/eventlab.com.crt', // path to your cert
+	'local_pk' => '/certs/eventlab.com.key', // path to your server private key
+	'allow_self_signed' => TRUE, // Allow self signed certs (should be false in production)
+	'verify_peer' => FALSE,
+]);
+
+$payload = [
+	'secrets' => ['TUzM3dqTeH8mhfdqTeH3mh81'],
+	'serverToken' => 'e0cFZPdWKesyGi58jXWEFnJHajik5LNt',
+];
+
+$payload = [];
+
+$webServer = new IoServer(
+	new HttpServer(
+		new WsServer(
+			new Chat(), $payload
+		)
+	),
+	$webSock,
+	// $loop
+);
+
+echo ('Socket server runing at: ' . $webSock->getAddress() . "\n");
+
+$loop->run();
+// $webServer->run();

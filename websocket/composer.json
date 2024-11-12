@@ -1,10 +1,25 @@
 {
-    "autoload": {
+    "autoload":
+    {
         "psr-4": {
             "MyApp\\": "src"
-        }
+        },
+
+        "exclude-from-classmap": [
+            "vendor/react/socket/src/Connection.php",
+            "vendor/cboden/ratchet/src/Ratchet/Server/IoConnection.php",
+            "vendor/cboden/ratchet/src/Ratchet/WebSocket/WsServer.php"
+        ],
+
+        "files": [
+            "overrides/Connection.php",
+            "overrides/IoConnection.php",
+            "overrides/WsServer.php"
+        ]
+
     },
-    "require": {
+    "require":
+    {
         "cboden/ratchet": "^0.4.4"
     }
 }
