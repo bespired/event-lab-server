@@ -1,0 +1,61 @@
+---
+    id:          (auto)
+    handle:      (auto)
+    project:     a
+    name:        right--handle
+    table:       rights
+    description: right made by install
+    label:       Right to handle request
+    cmne:        CRIH
+    column:      ~
+    datatype:    relation
+    valuetype:   single
+---
+    id:          (auto)
+    handle:      (auto)
+    project:     a
+    name:        right--email
+    table:       rights
+    description: right to email responses
+    label:       Right to Email
+    cmne:        CRIE
+    column:      ~
+    datatype:    relation
+    valuetype:   single
+---
+    id:          (auto)
+    handle:      (auto)
+    project:     a
+    name:        right--marketing
+    table:       rights
+    description: right to email marketing material
+    label:       Right to marketing
+    cmne:        CRIM
+    column:      ~
+    datatype:    relation
+    valuetype:   single
+---
+    id:          (auto)
+    handle:      (auto)
+    project:     a
+    name:        right--phone
+    table:       rights
+    description: right to call the customer
+    label:       Right to call
+    cmne:        CRIP
+    column:      ~
+    datatype:    relation
+    valuetype:   single
+---
+    id:          (auto)
+    handle:      (auto)
+    project:     a
+    name:        consent--handling
+    table:       consents
+    description: install
+    label:       Handling Consent
+    cmne:        CCIM
+    column:      state_1
+    extra:      '{"rights": ["right--handle", "right--email"], "reads": "By submitting this form, I consent to having this company store and process my submitted information in correspondence with the<a target="_blank" href="https://www.company.ai/privacy-policy">Privacy Policy</a>so they can respond to my inquiry."}'
+    datatype:    consent
+    valuetype:   single

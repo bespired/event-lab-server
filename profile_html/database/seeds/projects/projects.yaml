@@ -1,0 +1,18 @@
+---
+    id:         (auto)
+    handle:     (auto)
+    cmne:       SYST
+    project:    a
+    name:       system
+    label:      System
+    domain:     localhost
+    deleted:    null
+---
+    id:         (auto)
+    handle:     (auto)
+    cmne:       PRWS
+    project:    b
+    name:       some-site
+    label:      Some website website.org
+    domain:     website.org
+    deleted:    null

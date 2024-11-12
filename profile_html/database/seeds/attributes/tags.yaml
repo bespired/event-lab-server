@@ -1,0 +1,36 @@
+---
+    id:          (auto)
+    handle:      (auto)
+    project:     a
+    name:        group--base-tag
+    table:       groups
+    description: group made by install
+    label:       System tags
+    cmne:        GBT1
+    column:      ~
+    datatype:    relation
+    valuetype:   single
+---
+    id:         (auto)
+    handle:     (auto)
+    project:    a
+    name:       tag--tag-1
+    table:      tags
+    label:      Seeded
+    cmne:       TT01
+    column:     tag_1
+    extra:      '{"group": "base-tag"}'
+    datatype:   schrodinger  # - 0 1
+    valuetype:  single
+---
+    id:         (auto)
+    handle:     (auto)
+    project:    a
+    name:       tag--tag-2
+    table:      tags
+    label:      I am tag 2
+    cmne:       TT02
+    column:     tag_2
+    extra:      '{"group": "base-tag"}'
+    datatype:   schrodinger  # - 0 1
+    valuetype:  single

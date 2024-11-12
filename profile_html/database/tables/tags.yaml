@@ -1,0 +1,17 @@
+---
+    label: Tags
+    dependancy: profiles
+
+    tablename: acc_tags
+
+    columns:
+        id:         incremental
+        handle:     handle
+        profile:    handle
+        project:    base1
+
+        repeats:
+            amount: 100
+            columns:
+                tag:   base1
+                date:  timestamp-null

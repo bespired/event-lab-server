@@ -1,0 +1,26 @@
+---
+    label: Profiles
+    dependancy: projects
+
+    tablename: profiles
+
+    columns:
+        id:         incremental
+        handle:     handle
+        cmne:       mnemonic
+        project:    base1
+
+        visitcount:    int
+        firstvistcode: date-code # day of year - year  142-24
+        firstvistdate: timestamp-null
+        lastvistcode:  date-code
+        lastvistdate:  timestamp-null
+
+        tags:       concat
+        consents:   concat
+        segments:   concat
+        journeys:   concat
+
+        deleted:    timestamp-null
+
+    seeds: owners

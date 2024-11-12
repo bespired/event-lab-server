@@ -1,0 +1,39 @@
+---
+    label: Roles
+    dependancy: contacts
+
+    tablename: acc_roles
+
+    columns:
+        id:          incremental
+        handle:      handle
+        project:     base1
+
+        label:       label
+        role:        name
+        cmne:        mnemonic
+
+        deleted:     timestamp-null
+
+        attr(50):    crud
+
+    seeds: roles
+
+
+# so... contact has a role
+# say ... super-user
+# super-user has all bits in this table on true.
+# and attributes will have the area of attr_1 to attr_50
+
+# CRUD
+
+# attr_1 page
+# attr_2 collection
+# attr_3 member
+
+# attr_10 super-admin // anything
+# attr_11 admin  // anything except people
+# attr_12 people // only people
+
+# role null          attr_1: -R-- attr_2: -R-- attr_3: m attr_10: null
+# role super-admin   attr_1: CRUD attr_2: CRUD attr_3: CRUD attr_10: CRUD

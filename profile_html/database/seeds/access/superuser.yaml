@@ -1,0 +1,28 @@
+---
+    id:          (auto)
+    handle:      (auto)
+    cmne:        AC00
+
+    clone:       ~
+    contact:     (contact:joeri@bespired.nl)
+    role:        super-admin   # role
+    project:     a             # on a project
+
+    area_1:     backend        # areas member - backend
+    expire_1:   (now+month)    # token expire date
+    hash_1:     (APP_PASSWORD) # password control hash
+    token_1:    ~              # password reset token
+
+    area_2:     backend        # areas member - backend
+    expire_2:   "2020-12-01 10:00:00"
+    hash_2:     "dummy"        # password control hash
+---
+    id:          (auto)
+    handle:      (auto)
+    cmne:        ACC0
+
+    clone:       (proj_acc:AC00)
+    contact:     (contact:joeri@bespired.nl)
+    role:        ~             # role
+    project:     b             # on a project
+

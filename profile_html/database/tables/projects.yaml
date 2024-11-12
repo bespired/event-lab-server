@@ -1,0 +1,18 @@
+---
+    label: Projects
+    dependancy: ~
+
+    tablename: projects
+
+    columns:
+        id:         incremental
+        handle:     handle
+        project:    base1
+        cmne:       mnemonic
+        name:       name
+        label:      label
+        domain:     name
+        deleted:    timestamp
+
+    seeds: projects
+

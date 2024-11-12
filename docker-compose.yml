@@ -1,0 +1,131 @@
+networks:
+  docker.network:
+    driver: bridge
+
+services:
+  traefik:
+    restart: unless-stopped
+    image: traefik:v3
+    command:
+      - --api.dashboard=true
+      - --api.insecure=true
+      - --providers.docker=true
+      - --entrypoints.web.address=:80
+      - --entrypoints.websecure.address=:443
+      - --entrypoints.websecure.http.tls=true
+      - --providers.file.directory=/etc/traefik/dynamic
+      - --providers.file.watch=true
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.mydashboard.rule=Host(`traefik.com`)
+    networks:
+      - docker.network
+    ports:
+      - "80:80"
+      - "443:443"
+      - "8080:8080"
+    volumes:
+      # Mount the directory containing the certs
+      - ./docker/traefik/:/certs/
+      - ./docker/traefik/traefik.yml:/etc/traefik/dynamic/traefik.yaml
+      - /var/run/docker.sock:/var/run/docker.sock
+
+  profile:
+    build:
+      context: ./docker/apache
+      dockerfile: ./profile.dockerfile
+
+    env_file: "./profile_html/docker.env"
+    restart: unless-stopped
+    container_name: docker.profile
+    tty: true
+    depends_on:
+      - mysql
+    networks:
+      - docker.network
+    volumes:
+      - ./profile_html:/var/www/html/
+      # - ./docker/apache/ssl/mycert.crt:/etc/ssl/certs/mycert.crt
+      # - ./docker/apache/ssl/mycert.key:/etc/ssl/private/mycert.key
+    labels:
+      - traefik.http.routers.profile.rule=Host(`eventlab.com`) && PathPrefix(`/--/profile`)
+      - traefik.http.routers.profile.tls=true
+      - traefik.http.routers.profile.priority=100
+
+  tracker:
+    build:
+      context: ./docker/apache
+      dockerfile: ./tracker.dockerfile
+
+    env_file: "./tracker_html/docker.env"
+    restart: unless-stopped
+    container_name: docker.tracker
+    tty: true
+    depends_on:
+      - mysql
+    networks:
+      - docker.network
+    volumes:
+      - ./tracker_html:/var/www/html/
+    labels:
+      - traefik.http.routers.tracker.rule=Host(`eventlab.com`) && PathPrefix(`/--/tracker`)
+      - traefik.http.routers.tracker.priority=110
+      - traefik.http.routers.tracker.tls=true
+
+  website:
+    build:
+      context: ./docker/apache
+      dockerfile: ./public.dockerfile
+
+    env_file: "./public_html/docker.env"
+    restart: unless-stopped
+    container_name: docker.public
+    tty: true
+    depends_on:
+      - mysql
+    networks:
+      - docker.network
+    volumes:
+      - ./public_html:/var/www/html/
+    labels:
+      - traefik.http.routers.public.rule=Host(`eventlab.com`)
+      - traefik.http.routers.public.priority=10
+      - traefik.http.routers.public.tls=true
+
+  mysql:
+    image: arm64v8/mysql:latest
+    platform: linux/arm64
+    restart: unless-stopped
+    container_name: docker.mysql
+    tty: true
+    ports:
+      - "3306:3306"
+    networks:
+      - docker.network
+    volumes:
+      - "./docker/mysql/dbdata:/var/lib/mysql"
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-root}
+      MYSQL_USER: ${MYSQL_USER:-localhost}
+
+
+  redis:
+    image: bitnami/redis:latest
+    env_file: "./profile_html/docker.env"
+
+    restart: unless-stopped
+    container_name: docker.redis
+    tty: true
+    ports:
+      - "6379:6379"
+    networks:
+      - docker.network
+    volumes:
+      - ./docker/redis:/bitnami/redis/data
+
+    command: /bin/sh -c "redis-server --requirepass $$REDIS_ROOT_PASSWORD"
+
+    environment:
+      ALLOW_EMPTY_PASSWORD: ${REDIS_ALLOW_EMPTY_PASSWORD:-no}
+

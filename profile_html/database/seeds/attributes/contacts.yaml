@@ -1,0 +1,55 @@
+---
+    id:         (auto)
+    handle:     (auto)
+    project:    a
+    table:      contacts
+    name:       contact--email
+    label:      Email
+    cmne:       CEML
+    column:     email
+    datatype:   personalia
+    valuetype:  single
+---
+    id:         (auto)
+    handle:     (auto)
+    project:    a
+    name:       contact--firstname
+    table:      contacts
+    label:      First name
+    cmne:       CFNM
+    column:     firstname
+    datatype:   personalia
+    valuetype:  single
+---
+    id:         (auto)
+    handle:     (auto)
+    project:    a
+    name:       contact--lastname
+    table:      contacts
+    label:      Last name
+    cmne:       CLNM
+    column:     lastname
+    datatype:   personalia
+    valuetype:  single
+---
+    id:         (auto)
+    handle:     (auto)
+    project:    a
+    name:       contact--streetname
+    table:      contacts
+    label:      Street name
+    cmne:       CSNM
+    column:     attr_1
+    datatype:   address
+    valuetype:  single
+---
+    id:         (auto)
+    handle:     (auto)
+    project:    a
+    name:       contact--housenumber
+    table:      contacts
+    label:      House number
+    cmne:       CHNB
+    column:     attr_2
+    datatype:   address
+    valuetype:  single

@@ -1,0 +1,40 @@
+---
+    id:         (auto)
+    handle:     (auto)
+    name:       profile--tags
+    table:      profiles
+    label:      Tags
+    cmne:       PTAG
+    column:     tags
+    datatype:   concat
+    valuetype:  single
+---
+    id:         (auto)
+    handle:     (auto)
+    name:       profile--consents
+    table:      profiles
+    label:      Consents
+    cmne:       PCST
+    column:     consents
+    datatype:   concat
+    valuetype:  single
+---
+    id:         (auto)
+    handle:     (auto)
+    name:       profile--segments
+    table:      profiles
+    label:      Segments
+    cmne:       PSEG
+    column:     segments
+    datatype:   concat
+    valuetype:  single
+---
+    id:         (auto)
+    handle:     (auto)
+    name:       profile--journeys
+    table:      profiles
+    label:      Journeys
+    cmne:       PJRN
+    column:     journeys
+    datatype:   concat
+    valuetype:  single

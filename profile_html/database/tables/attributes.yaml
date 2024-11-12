@@ -1,0 +1,26 @@
+---
+    label: Attributes
+    dependancy: projects
+
+    tablename: proj_attributes
+
+    columns:
+        id:          incremental
+        handle:      handle
+        project:     base1
+        deleted:     timestamp-null
+
+        table:       name        # was enum[ profiles/journeys/contacts/timelines
+                                 #       /events/groups/tags/rights/consents/user ]
+        label:       label       # First name (for contact) or Nice Tag (for tag)
+        description: name
+        name:        name        # contact--first-name  or tag--nice-tag
+        cmne:        mnemonic
+        service:     name        # if on timeline what service is this from
+        column:      name        # attr001 or large010 etc.
+        extra:       large       # data for consent or tag / maybe this should be blob?
+        datatype:    name        # how sensitive is this data
+        valuetype:   enum[pointer/single/array/object]
+
+    seeds: attributes
+

@@ -1,0 +1,49 @@
+---
+    id:             (auto)
+    handle:         (auto)
+    cmne:           OSYS
+    project:        a
+    deleted:        ~
+
+    relations:
+        contacts:
+            -
+                id:         (auto)
+                handle:     (auto)
+                profile:    (parent)
+                project:    a  # or handle(parent:project)
+                deleted:    ~
+
+                role:       super-admin
+                email:      joeri@bespired.nl
+                firstname:  Joeri
+                lastname:   Kassenaar
+                attr_1:     Mathijsenlaan
+                attr_2:     39
+        tags:
+            -
+                id:         (auto)
+                handle:     (auto)
+                profile:    (parent)
+                project:    a
+                tag_1:      1
+                date_1:     (now)
+
+        # tokens:
+        #     -
+        #         id:         (auto)
+        #         handle:     (auto)
+        #         project:    a
+        #         cmne:       ATKN
+        #         profile:    (parent)
+        #         contact:    (contact:joeri@bespired.nl)
+
+        #         access_1:   role
+        #         hash_1:     (APP_PASSWORD)
+        #         token_1:    ~  # use this to change password
+        #         expire_1:   (now+month)
+
+        #         access_2:   role
+        #         hash_2:     "Some fake hash"
+        #         expire_2:   "2020-12-01 10:00:00"
+

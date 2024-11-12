@@ -1,0 +1,30 @@
+EXAMPLES
+
+
+POST:
+http://localhost/--/profile/0/create/attribute/group
+{
+    "label": "Second Group",
+    "description": "This is a group for tag",
+    "cmne" : "GBT2"  <-- makes it an UPDATE
+}
+
+http://localhost/--/profile/0/create/attribute/tag
+{
+    "label": "Second Tag",
+    "description": "This is my tag",
+    "group": "new-tag"
+}
+
+
+http://localhost/--/profile/0/cleanup/attributes
+{
+   tables: [
+       "groups","profiles","journeys","contacts","timelines","tags","consents"
+   ]
+}
+
+
+
+GET:
+http://localhost/--/card/for/joeri%40bespired.nl

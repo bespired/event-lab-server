@@ -1,0 +1,64 @@
+---
+    id:         (auto)
+    handle:     (auto)
+    project:    a
+    label:      System User
+    cmne:       AU00
+    role:       system-user
+    attr_1:     CRUD
+---
+    id:         (auto)
+    handle:     (auto)
+    project:    a
+    label:      Super Admin
+    cmne:       AUSU
+    role:       super-admin
+    attr_1:     CRUD
+---
+    id:         (auto)
+    handle:     (auto)
+    project:    a
+    label:      Visitor
+    cmne:       AUVS
+    role:       ~
+    attr_11:    -R--
+    attr_12:    -R--
+    attr_13:    -R--
+---
+    id:         (auto)
+    handle:     (auto)
+    project:    a
+    label:      Admin
+    cmne:       AUAM
+    role:       admin
+    attr_1:     CRUD
+    attr_2:     CRUD
+    attr_3:     CRUD
+    attr_11:    CRUD
+    attr_12:    CRUD
+    attr_13:    CRUD
+---
+    id:         (auto)
+    handle:     (auto)
+    project:    a
+    label:      Editor
+    cmne:       AUED
+    role:       editor
+    attr_4:     -R--
+    attr_11:    CRUD
+    attr_12:    CRUD
+    attr_13:    CRUD
+
+
+# role null          attr_1: -R-- attr_2: -R-- attr_3: null attr_10: null
+# role super-admin   attr_1: CRUD attr_2: CRUD attr_3: CRUD attr_10: CRUD
+
+# attr_1  sys-admin    // anything backend
+# attr_2  super-admin  // anything backend
+# attr_3  admin        // anything except people
+# attr_4  people       // only people
+# attr_5  attributes   // add access to website member section
+# attr_9  member       // add access to website member section
+# attr_11 pages      add access to website pages
+# attr_12 collection add access to website collection
+# attr_13 assets     add access to assets

@@ -1,0 +1,10 @@
+RewriteEngine On
+
+RewriteRule ^/assets(.*)$ %{DOCUMENT_ROOT}/%{REQUEST_URI} [L]
+
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule . /index.php [L]
+
+# Traefik sends all the rest of https://eventlab.com/ to this apache
+# All assets of all other pages should be here.

@@ -1,0 +1,116 @@
+# attr_1 sys-admin    // anything backend
+# attr_2 super-admin  // anything backend
+# attr_3 admin        // anything except people
+# attr_4 people       // only people
+# attr_5 attributes   // add access to website member section
+
+# attr_9 member       // add access to website member section
+
+# attr_11 pages      add access to website pages
+# attr_12 collection add access to website collection
+# attr_13 assets     add access to assets
+---
+    id:          (auto)
+    handle:      (auto)
+    name:        access--sys-admin
+    table:       access
+    description: Attr 1 is for system admin
+    label:       System Admin
+    cmne:        AA00
+    column:      attr_1
+    datatype:    crud
+    valuetype:   single
+---
+    id:          (auto)
+    handle:      (auto)
+    name:        access--super-admin
+    table:       access
+    description: Attr 2 is for super admin
+    label:       Super Admin
+    cmne:        AASA
+    column:      attr_2
+    datatype:    crud
+    valuetype:   single
+---
+    id:          (auto)
+    handle:      (auto)
+    name:        access--admin
+    table:       access
+    description: Attr 3 is Admin
+    label:       Admin
+    cmne:        AAMB
+    column:      attr_3
+    datatype:    crud
+    valuetype:   single
+---
+    id:          (auto)
+    handle:      (auto)
+    name:        access--people
+    table:       access
+    description: Attr 4 is for people
+    label:       People
+    cmne:        AAPL
+    column:      attr_4
+    datatype:    crud
+    valuetype:   single
+---
+    id:          (auto)
+    handle:      (auto)
+    name:        access--attributes
+    table:       access
+    description: Attr 5 is for Attributes
+    label:       Attributes
+    cmne:        AAAT
+    column:      attr_5
+    datatype:    crud
+    valuetype:   single
+
+---
+    id:          (auto)
+    handle:      (auto)
+    name:        access--member
+    table:       access
+    description: Attr 9 is frontend member
+    label:       Member
+    cmne:        AAMB
+    column:      attr_9
+    datatype:    crud
+    valuetype:   single
+
+---
+    id:          (auto)
+    handle:      (auto)
+    name:        access--page
+    table:       access
+    description: Attr 11 is access to pages
+    label:       Pages
+    cmne:        AAPG
+    column:      attr_11
+    datatype:    crud
+    valuetype:   single
+---
+    id:          (auto)
+    handle:      (auto)
+    name:        access--collection
+    table:       access
+    description: Attr 12 is access to collections
+    label:       Collection
+    cmne:        AACL
+    column:      attr_12
+    datatype:    crud
+    valuetype:   single
+---
+    id:          (auto)
+    handle:      (auto)
+    name:        access--assets
+    table:       access
+    description: Attr 13 is access to Assets
+    label:       Assets
+    cmne:        AAAS
+    column:      attr_13
+    datatype:    crud
+    valuetype:   single
+
+
+
+

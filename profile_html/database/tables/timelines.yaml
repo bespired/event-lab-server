@@ -1,0 +1,17 @@
+---
+    label: Timelines
+    dependancy: profiles
+
+    tablename: acc_timelines
+
+    columns:
+        id:         incremental
+        handle:     handle
+        profile:    handle
+        cmne:       mnemonic
+        project:    base1
+        created:    timestamp  # action time / last visit
+        service:    name
+        attr(30):   name
+        large(10):  large
+

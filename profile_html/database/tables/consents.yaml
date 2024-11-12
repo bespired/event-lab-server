@@ -1,0 +1,19 @@
+---
+    label: Consents
+    dependancy: profiles
+
+    tablename: acc_consents
+
+    columns:
+        id:          incremental
+        handle:      handle
+        profile:     handle
+        cmne:        mnemonic
+        project:     base1
+
+        state(30):   base1
+        extend(30):  data
+        predate(30): timestamp-null
+        optdate(30): timestamp-null
+        outdate(30): timestamp-null
+

@@ -1,0 +1,30 @@
+---
+    label: Accesses
+    dependancy: contacts
+
+    tablename: proj_accesses
+
+    columns:
+        id:          incremental
+        handle:      handle
+
+        contact:     label       # contact
+        clone:       handle-null # same as other project
+        role:        name        # role
+        project:     label       # on a project
+
+        cmne:        mnemonic
+
+        repeats:
+            amount: 3
+            columns:
+                area:     name # areas member - backend
+                expire:   name # token expire date
+                hash:     name # password control hash
+                token:    name # password reset token
+
+        deleted:     timestamp-null
+
+
+
+    seeds: access

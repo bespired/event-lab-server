@@ -1,0 +1,26 @@
+---
+    label: Contacts
+    dependancy: profiles
+
+    tablename: acc_contacts
+
+    columns:
+        id:          incremental
+        handle:      handle
+        profile:     handle
+        project:     base1
+
+        role:        name  # attr defined types who can do stuff on-site and backend
+
+        email:       name
+        blacklist:   boolean
+        in_queue:    large
+        firstname:   name
+        lastname:    name
+
+        deleted:     timestamp-null
+
+        attr(30):    name
+        large(10):   large
+
+    # seeds: names
