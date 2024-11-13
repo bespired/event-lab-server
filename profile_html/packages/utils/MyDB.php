@@ -32,6 +32,14 @@ Class MyDB {
 		}
 	}
 
+	public function close() {
+		if (!$this->conn) {
+			return;
+		}
+
+		$this->conn->close();
+	}
+
 	public function insert($tableName, $slots) {
 		$keys = array_keys($slots);
 		$values = array_values($slots);

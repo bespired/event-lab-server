@@ -18,9 +18,11 @@ class Jwt {
 		date_default_timezone_set('UTC');
 		$time = time();
 
+		$iss = isset($_SERVER['HTTP_X_FORWARDED_HOST']) ? $_SERVER['HTTP_X_FORWARDED_HOST'] : 'localhost';
+
 		$payload['iat'] = $time;
-		$payload['exp'] = $time + 60 * 60;
-		$payload['iss'] = 'localhost';
+		$payload['exp'] = $time + TTL; //(60 * 60 * 12);
+		$payload['iss'] = $iss;
 
 		// $payload = [
 		// 	'iat' => $time,

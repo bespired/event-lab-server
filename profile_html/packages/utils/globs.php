@@ -1,5 +1,7 @@
 <?php
 
+define("TTL", 60 * 60 * 12);
+
 if (!function_exists('glob_base36')) {
 	function glob_base36($decimal) {
 		$base36 = str_split('0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ');

@@ -1,9 +1,16 @@
 <?php
 
 class Response {
-	public static function error($message) {
+
+	private static function cors() {
+		header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
+		header("Access-Control-Allow-Origin:*");
+		header("Access-Control-Allow-Headers: Authorization, Content-Type, Accept, Origin, X-Auth-Token");
 		header('Content-Type: application/json');
-		header("Access-Control-Allow-Origin: *");
+	}
+
+	public static function error($message) {
+		self::cors();
 
 		echo json_encode([
 			'error' => true,
@@ -14,8 +21,7 @@ class Response {
 	}
 
 	public static function success($message, $token = null) {
-		header('Content-Type: application/json');
-		header("Access-Control-Allow-Origin: *");
+		self::cors();
 
 		$response = [
 			'success' => true,
