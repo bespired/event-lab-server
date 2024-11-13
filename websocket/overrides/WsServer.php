@@ -1,5 +1,7 @@
 <?php
 namespace Ratchet\WebSocket;
+use Firebase\JWT\JWT;
+use Firebase\JWT\Key;
 use GuzzleHttp\Psr7\Message;
 use Psr\Http\Message\RequestInterface;
 use Ratchet\ComponentInterface;
