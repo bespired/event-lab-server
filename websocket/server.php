@@ -18,24 +18,15 @@ $webSock = new React\Socket\SecureServer($webSock, $loop, [
 	'verify_peer' => FALSE,
 ]);
 
-$payload = [
-	'secrets' => ['TUzM3dqTeH8mhfdqTeH3mh81'],
-	'serverToken' => 'e0cFZPdWKesyGi58jXWEFnJHajik5LNt',
-];
-
-$payload = [];
-
 $webServer = new IoServer(
 	new HttpServer(
 		new WsServer(
-			new Chat(), $payload
+			new Chat()
 		)
 	),
 	$webSock,
-	// $loop
 );
 
 echo ('Socket server runing at: ' . $webSock->getAddress() . "\n");
 
 $loop->run();
-// $webServer->run();

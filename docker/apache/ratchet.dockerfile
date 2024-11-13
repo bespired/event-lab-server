@@ -66,8 +66,8 @@ RUN chmod +x /usr/local/bin/docker-entrypoint
 
 COPY ./httpd.conf /usr/local/apache2/conf/httpd.conf
 
-COPY ./public-html.conf /etc/apache2/sites-enabled/000-default.conf
-COPY ./public-ssl.conf  /etc/apache2/sites-enabled/default-ssl.conf
+COPY ./configs/html.conf /etc/apache2/sites-enabled/000-default.conf
+COPY ./configs/ssl.conf  /etc/apache2/sites-enabled/default-ssl.conf
 
 # RUN php /usr/local/bin/composer require cboden/ratchet
 

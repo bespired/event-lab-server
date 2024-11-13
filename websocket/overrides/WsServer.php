@@ -61,27 +61,19 @@ class WsServer implements HttpServerInterface {
 	 */
 	private $msgCb;
 
-	private $secrets;
-
-	private $serverToken;
+	private $secrets = [];
 
 	/**
 	 * @param \Ratchet\WebSocket\MessageComponentInterface|\Ratchet\MessageComponentInterface $component Your application to run with WebSockets
 	 * @note If you want to enable sub-protocols have your component implement WsServerInterface as well
 	 */
-	public function __construct(ComponentInterface $component, array $payload) {
+	public function __construct(ComponentInterface $component, array $payload = []) {
 		if ($component instanceof MessageComponentInterface) {
 			$this->msgCb = function (ConnectionInterface $conn, MessageInterface $msg) {
-
-				$this->ifSecrets($msg->getPayload());
-
 				$this->delegate->onMessage($conn, $msg);
 			};
 		} elseif ($component instanceof DataComponentInterface) {
 			$this->msgCb = function (ConnectionInterface $conn, MessageInterface $msg) {
-
-				$this->ifSecrets($msg->getPayload());
-
 				$this->delegate->onMessage($conn, $msg->getPayload());
 			};
 		} else {
@@ -110,28 +102,6 @@ class WsServer implements HttpServerInterface {
 			return $reusableUnderflowException;
 		};
 
-		// $this->secrets = $payload['secrets'];
-		// $this->serverToken = $payload['serverToken'];
-
-	}
-
-	private function ifSecrets($msg) {
-		$json = @json_decode($msg);
-
-		if (!$json) {
-			return;
-		}
-
-		if (isset($json->connectionTokens)) {
-
-			// check if this is the game-server taking...
-			if ($json->token === $this->serverToken) {
-				$this->secrets = $json->connectionTokens;
-				echo "Connection tokens set by game server.\n";
-			}
-
-		}
-
 	}
 
 	/**
@@ -147,10 +117,33 @@ class WsServer implements HttpServerInterface {
 		$conn->WebSocket = new \StdClass;
 		$conn->WebSocket->closing = false;
 
-		// HACK
-		// $this->handshakeNegotiator->setSupportedSubProtocols($this->secrets);
+		$token = $request->getUri()->getPath();
 
-		$response = $this->handshakeNegotiator->handshake($request)->withHeader('X-Powered-By', \Ratchet\VERSION);
+		if (!$token) {
+			return $conn->close();
+		}
+
+		$token = substr($token, 1);
+
+		if (!$this->validToken($token)) {
+			return $conn->close();
+		}
+
+		// print_r($token);
+
+		// $key = '-*!-Goat-0*-';
+		// $decoded = JWT::decode($token, new Key($key, 'HS256'));
+		// print_r($decoded);
+
+		// if (!in_array($token, $this->secrets)) {
+		// 	// is it a valid one?
+		// 	$key = '-*!-Goat-0*-';
+		// 	$decoded = JWT::decode($token, new Key($key, 'HS256'));
+		// 	print_r($decoded);
+		// }
+
+		$response = $this->handshakeNegotiator
+			->handshake($request)->withHeader('X-Powered-By', \Ratchet\VERSION);
 
 		$conn->send(Message::toString($response));
 
@@ -176,6 +169,18 @@ class WsServer implements HttpServerInterface {
 		$this->connections->attach($conn, new ConnContext($wsConn, $streamer));
 
 		return $this->delegate->onOpen($wsConn);
+	}
+
+	private function validToken($token) {
+		$key = '-*!-Goat-0*-';
+
+		try {
+			$decoded = JWT::decode($token, new Key($key, 'HS256'));
+		} catch (Exception $e) {
+			$decoded = null;
+		}
+
+		return $decoded !== null;
 	}
 
 	/**

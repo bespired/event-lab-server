@@ -16,8 +16,8 @@ services:
       - --entrypoints.websecure.http.tls=true
       - --entryPoints.ws.address=:9002
       - --entryPoints.wss.address=:9001
-      - --providers.file.directory=/etc/traefik/dynamic
-      # - --providers.file.watch=true
+      - --providers.file.directory=/certs
+      - --providers.file.watch=true
     labels:
       - traefik.enable=true
       - traefik.http.routers.mydashboard.rule=Host(`traefik.com`)
@@ -32,7 +32,8 @@ services:
     volumes:
       # Mount the directory containing the certs
       - ./docker/traefik/:/certs/
-      - ./docker/traefik/traefik.yml:/etc/traefik/dynamic/traefik.yaml
+      - ./docker/traefik/traefik.yml:/certs/traefik.yaml
+      - ./docker/traefik/:/etc/traefik/dynamic/
       - /var/run/docker.sock:/var/run/docker.sock
 
   profile:

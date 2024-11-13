@@ -43,7 +43,7 @@ RUN echo "ServerName tracker" >> /etc/apache2/apache2.conf
 ENV APP_ROOT=/var/www
 
 ENV SERVER_NAME=localhost
-ENV DOCUMENT_ROOT=${APP_ROOT}/tracker_html
+ENV DOCUMENT_ROOT=${APP_ROOT}/html
 ENV APACHE_LOG_DIR=${APP_ROOT}/docker/apache/logs
 ENV APACHE_RUN_GROUP=www-data
 ENV APACHE_RUN_USER=www-data
@@ -59,8 +59,8 @@ RUN chown -R ${APACHE_RUN_USER}:${APACHE_RUN_USER} ${DOCUMENT_ROOT}
 
 COPY ./httpd.conf /usr/local/apache2/conf/httpd.conf
 
-COPY ./public-html.conf /etc/apache2/sites-enabled/000-default.conf
-COPY ./public-ssl.conf  /etc/apache2/sites-enabled/default-ssl.conf
+COPY ./configs/html.conf /etc/apache2/sites-enabled/000-default.conf
+COPY ./configs/ssl.conf  /etc/apache2/sites-enabled/default-ssl.conf
 
 # Expose ports
 EXPOSE 80
