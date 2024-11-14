@@ -1,7 +1,5 @@
-# Docker with PHP 8.2 and later versions for MAC with M1/M2
-
-This repository is consisting of a docker images of PHP version 8.2 (you can change it in the docker-compose file),
-Mysql latest, Apache and phpmyAdmin
+# event-lab-server
+### Docker with PHP 8.3 and later versions for MAC with M1/M2
 
 
 ## Prerequisites:
@@ -11,26 +9,37 @@ https://docs.docker.com/desktop/install/mac-install/
 
 ## Accessing https://
 
-Please add SSL Certificate. 
+Create a SSL certificate to your system to trust the https connections.
 
-If you want to run your project in https:// and you want to access htttps://localhost then please add your SSL certificates into the SSL directory inside of docker/apache/ folder.
-Please rename your Certificate files to -> mycert.key and mycert.csr
-I mentioned the file names in the docker-compose.yml and Dockerfile of apache. However, you can also modify the files.
+`/event-lab-server/docker/traefik/eventlab.com.crt`
 
 ## How to use:
 
 - Clone the repository
 - Enter the repository folder
-- Run the `docker-compose up` command
+- Run `docker compose up -d` command
 
-It will build the docker images and run the container.
-Now if you want to put your php files, it will be in the html folder. html folder is the root directory and is set in the apache environment as root directory.
 
-For phpmyAdmin, you can use the localhost:8080
+Currently, on writting this document, Docker will run 
 
-## Inserting Database from a sql file
-Just go to docker/mysql/dbdata and put you sql file there.
+- Traefik for routing
+- Rachet for websockets
+- Redis for fast caching
+- MySQL for persistent database
+- Three webservers endpoints 
+  - Profile: Auth and CRM and Score
+  - Tracker: This is where the form and tracker handler will go.
+  - Public: where the frontend should go. Currently in project event-lab-front
 
-You can acess this sql file now in the terminal of your container. Just navigate to var/lib/mysql/ and you can find your file.
+Well.
+Loads still needs to be done to call this even a beta
 
-# event-lab-server
+
+MySQL database can be created in 
+`/event-lab-server/profile_html/database`  with command   
+`> php createDB.php`   
+`> php seedDB.php`   
+Building and seeding is done via YAML files.
+
+If you want to rerun the create you can remove the DB with    
+`> php createDB.php`   
