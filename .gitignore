@@ -4,3 +4,4 @@
 /docker/redis/appendonlydir/*
 websocket/vendor/*
 /docker/redis/dump.rdb
+websocket/vendor/
