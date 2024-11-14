@@ -5,7 +5,7 @@
     project:    a
     name:       system
     label:      System
-    domain:     localhost
+    domain:     eventlab.com
     deleted:    null
 ---
     id:         (auto)
