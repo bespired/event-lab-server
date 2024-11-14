@@ -2,15 +2,15 @@
 
 // YES I KNOW
 
-include_once "../packages/utils/globs.php";
-include_once "../packages/utils/Handle.php";
-include_once "../packages/utils/Dot.php";
+include_once '../packages/utils/globs.php';
+include_once '../packages/utils/Handle.php';
+include_once '../packages/utils/Dot.php';
 $env = Dot::handle();
 
 $servername = $env->mysqlHost;
-$username = $env->mysqlRootUser;
-$password = $env->mysqlRootPassword;
-$database = $env->mysqlDatabase;
+$username   = $env->mysqlRootUser;
+$password   = $env->mysqlRootPassword;
+$database   = $env->mysqlDatabase;
 
 $counts = [];
 
@@ -18,119 +18,103 @@ $counts = [];
 $conn = new mysqli($servername, $username, $password);
 // Check connection
 if ($conn->connect_error) {
-	die("Connection failed: " . $conn->connect_error);
+    exit('Connection failed: ' . $conn->connect_error);
 }
 
 // Check database
-$query = 'SHOW DATABASES LIKE "' . $database . '"';
+$query     = 'SHOW DATABASES LIKE "' . $database . '"';
 $resExists = $conn->query($query);
 
 if ($resExists->num_rows !== 1) {
-	echo "No such database exists.\n";
-	exit;
+    echo "No such database exists.\n";
+    exit;
 }
 
 $conn->query('use ' . $database);
 
 $tablefiles = glob('./tables/*.yaml');
 foreach ($tablefiles as $table) {
-	$name = str_replace('.yaml', '', explode('/', $table)[2]);
-	$file = file_get_contents($table);
-	$parsed = (object) yaml_parse($file);
-	$tables[$name] = $parsed;
-	$counts[$name] = 1;
-	if (!$parsed->dependancy) {
-		$order[] = $name;
-	}
+    $name          = str_replace('.yaml', '', explode('/', $table)[2]);
+    $file          = file_get_contents($table);
+    $parsed        = (object) yaml_parse($file);
+    $tables[$name] = $parsed;
+    $counts[$name] = 1;
+    if (!$parsed->dependancy) {
+        $order[] = $name;
+    }
 }
 
 for ($repeat = count($tables); $repeat > 0; $repeat--) {
-	foreach ($tables as $name => $table) {
-		$find = $tables[$name]->dependancy;
-		if (!in_array($name, $order) && in_array($find, $order)) {
-			$order[] = $name;
-		}
-	}
+    foreach ($tables as $name => $table) {
+        $find = $tables[$name]->dependancy;
+        if (!in_array($name, $order) && in_array($find, $order)) {
+            $order[] = $name;
+        }
+    }
 }
 
 $reserved = ['id', 'relations', 'amount'];
-$tests = ['project', 'cmne', 'name', 'email'];
+$tests    = ['project', 'cmne', 'name', 'email'];
 
 foreach ($order as $name) {
-	$table = $tables[$name];
+    $table = $tables[$name];
 
-	$tableName = $table->tablename;
+    $tableName = $table->tablename;
 
-	if (isset($table->seeds)) {
+    if (isset($table->seeds)) {
+        $sql = "SHOW TABLES LIKE '$tableName'";
+        $rep = $conn->query($sql);
 
-		$sql = "SHOW TABLES LIKE '$tableName'";
-		$rep = $conn->query($sql);
+        if ($rep->num_rows !== 1) {
+            echo "No table $tableName exists.\n Did you create the DB?\n";
+            exit;
+        } else {
+            $seedfolder = __DIR__ . "/seeds/$table->seeds/";
+            $exists     = file_exists($seedfolder);
 
-		if ($rep->num_rows !== 1) {
+            if ($exists) {
+                $seedfiles = glob($seedfolder . '*.yaml');
 
-			echo "No table $tableName exists.\n Did you create the DB?\n";
-			exit;
+                foreach ($seedfiles as $seedname) {
+                    $info = (object) pathinfo($seedname);
+                    echo "Seed $info->filename for table $tableName\n";
 
-		} else {
+                    $file  = file_get_contents($seedname);
+                    $yamls = explode('---', $file);
+                    array_shift($yamls);
 
-			$seedfolder = __DIR__ . "/seeds/$table->seeds/";
-			$exists = file_exists($seedfolder);
+                    // echo "==>";
+                    // print_r($table);
+                    // print_r($yamls);
+                    // echo "\n";
 
-			if ($exists) {
+                    foreach ($yamls as $index => $yaml) {
+                        $relations    = null;
+                        $table->index = $index + 1;
+                        $parent       = insertOrUpdate($yaml, $table);
 
-				$seedfiles = glob($seedfolder . '*.yaml');
+                        if ($relations) {
+                            // DO THE RELATION DATA ...
+                            foreach ($relations as $itable => $array) {
+                                foreach ($array as $count => $values) {
+                                    $thistable        = $tables[$itable];
+                                    $thistable->index = $counts[$itable]++;
+                                    $thisyaml         = yaml_emit($values);
 
-				foreach ($seedfiles as $seedname) {
-
-					$info = (object) pathinfo($seedname);
-					echo "Seed $info->filename for table $tableName\n";
-
-					$file = file_get_contents($seedname);
-					$yamls = explode('---', $file);
-					array_shift($yamls);
-
-					// echo "==>";
-					// print_r($table);
-					// print_r($yamls);
-					// echo "\n";
-
-					foreach ($yamls as $index => $yaml) {
-
-						$relations = null;
-						$table->index = $index + 1;
-						$parent = insertOrUpdate($yaml, $table);
-
-						if ($relations) {
-							// DO THE RELATION DATA ...
-							foreach ($relations as $itable => $array) {
-								foreach ($array as $count => $values) {
-
-									$thistable = $tables[$itable];
-									$thistable->index = $counts[$itable]++;
-									$thisyaml = yaml_emit($values);
-
-									$child = insertOrUpdate($thisyaml, $thistable, $parent);
-
-								}
-
-							}
-
-						}
-					}
-				}
-
-			} else {
-
-				echo "File $table->seeds.yaml not found for table $tableName.\n";
-
-			}
-
-		}
-	}
-
+                                    $child = insertOrUpdate($thisyaml, $thistable, $parent);
+                                }
+                            }
+                        }
+                    }
+                }
+            } else {
+                echo "File $table->seeds.yaml not found for table $tableName.\n";
+            }
+        }
+    }
 }
 
-$sql = 'UPDATE `acc_contacts` SET email = "joeri@bespired.nl" WHERE email LIKE "%@bespired.nl"';
+$sql = 'UPDATE `accu_contacts` SET email = "joeri@bespired.nl" WHERE email LIKE "%@bespired.nl"';
 
 $conn->query($sql);
 
@@ -138,188 +122,178 @@ $conn->close();
 
 exit;
 
-/////
+// ///
 
-function tableWheres($table) {
-	global $tests;
+function tableWheres($table)
+{
+    global $tests;
 
-	$columns = $table->columns;
-	$wheres = [];
-	foreach ($tests as $test) {
-		if (isset($columns[$test])) {
-			$wheres[] = $test; // sprintf('`%s` = "%s"', $test, $columns->$test);
-		}
-	}
+    $columns = $table->columns;
+    $wheres  = [];
+    foreach ($tests as $test) {
+        if (isset($columns[$test])) {
+            $wheres[] = $test; // sprintf('`%s` = "%s"', $test, $columns->$test);
+        }
+    }
 
-	return $wheres;
+    return $wheres;
 }
 
-function insertOrUpdate($yaml, $table, $parent = null) {
+function insertOrUpdate($yaml, $table, $parent = null)
+{
+    global $conn, $reserved, $relations;
 
-	global $conn, $reserved, $relations;
+    $tableName = $table->tablename;
 
-	$tableName = $table->tablename;
+    $columns = [];
+    $values  = [];
+    $return  = [];
+    $wheres  = tableWheres($table);
 
-	$columns = [];
-	$values = [];
-	$return = [];
-	$wheres = tableWheres($table);
+    $parsed    = (object) yaml_parse($yaml);
+    $relations = isset($parsed->relations) ? $parsed->relations : null;
 
-	$parsed = (object) yaml_parse($yaml);
-	$relations = isset($parsed->relations) ? $parsed->relations : null;
+    // IS RECORD IN DB?
+    $whats = [];
+    foreach ($wheres as $where) {
+        if (isset($parsed->$where)) {
+            $whats[] = sprintf('`%s` = "%s"', $where, $parsed->$where);
+            $display = $parsed->$where;
+        }
+    }
+    $sql = '';
+    $sql = "SELECT * FROM `$tableName` WHERE " . join(' AND ', $whats);
 
-	// IS RECORD IN DB?
-	$whats = [];
-	foreach ($wheres as $where) {
-		if (isset($parsed->$where)) {
-			$whats[] = sprintf('`%s` = "%s"', $where, $parsed->$where);
-			$display = $parsed->$where;
-		}
-	}
-	$sql = "";
-	$sql = "SELECT * FROM `$tableName` WHERE " . join(" AND ", $whats);
+    $result = $conn->query($sql);
 
-	$result = $conn->query($sql);
+    // FOUND UPDATE
+    if ($result->num_rows !== 0) {
+        $updates = [];
 
-	// FOUND UPDATE
-	if ($result->num_rows !== 0) {
+        foreach ($parsed as $key => $value) {
+            if (!in_array($key, $reserved)) {
+                $value        = cast($value, $key, $table, $parsed, $parent);
+                $updates[]    = sprintf('`%s` = %s', $key, $value);
+                $return[$key] = $value;
+            }
+        }
 
-		$updates = [];
+        $sql = '';
+        $sql .= sprintf("UPDATE `%s` \n", $tableName);
+        $sql .= 'SET ' . join(', ', $updates) . " \n";
+        $sql .= 'WHERE ' . join(' AND ', $whats);
 
-		foreach ($parsed as $key => $value) {
-			if (!in_array($key, $reserved)) {
-				$value = cast($value, $key, $table, $parsed, $parent);
-				$updates[] = sprintf("`%s` = %s", $key, $value);
-				$return[$key] = $value;
-			}
-		}
+        if ($conn->query($sql) === true) {
+            echo "Data update successfully\n";
+        } else {
+            print_r($sql);
 
-		$sql = "";
-		$sql .= sprintf("UPDATE `%s` \n", $tableName);
-		$sql .= "SET " . join(", ", $updates) . " \n";
-		$sql .= "WHERE " . join(" AND ", $whats);
+            echo 'Error update data: ' . $conn->error . "\n";
+        }
+    } else {
+        //  NOT FOUND ... INSERT IT
 
-		if ($conn->query($sql) === TRUE) {
-			echo "Data update successfully\n";
-		} else {
+        foreach ($parsed as $key => $value) {
+            if (!in_array($key, $reserved)) {
+                $columns[]    = "`$key`";
+                $value        = cast($value, $key, $table, $parsed, $parent);
+                $values[]     = $value;
+                $return[$key] = $value;
+            }
+        }
 
-			print_r($sql);
+        $sql = '';
+        $sql .= sprintf("INSERT INTO `%s` (%s) \n", $tableName, join(',', $columns));
+        $sql .= sprintf("VALUES (%s) \n", join(',', $values));
 
-			echo "Error update data: " . $conn->error . "\n";
-		}
+        // print_r($sql);
 
-	} else {
+        if ($conn->query($sql) === true) {
+            echo "Data insert successfully\n";
+        } else {
+            print_r($sql);
 
-		//  NOT FOUND ... INSERT IT
+            echo 'Error creating data: ' . $conn->error . "\n";
+        }
+    }
 
-		foreach ($parsed as $key => $value) {
-			if (!in_array($key, $reserved)) {
-				$columns[] = "`$key`";
-				$value = cast($value, $key, $table, $parsed, $parent);
-				$values[] = $value;
-				$return[$key] = $value;
-			}
-		}
-
-		$sql = "";
-		$sql .= sprintf("INSERT INTO `%s` (%s) \n", $tableName, join(',', $columns));
-		$sql .= sprintf("VALUES (%s) \n", join(',', $values));
-
-		// print_r($sql);
-
-		if ($conn->query($sql) === TRUE) {
-			echo "Data insert successfully\n";
-		} else {
-
-			print_r($sql);
-
-			echo "Error creating data: " . $conn->error . "\n";
-		}
-	}
-
-	return $return;
+    return $return;
 }
 
-function cast($value, $key, $table, $parsed, $parent) {
+function cast($value, $key, $table, $parsed, $parent)
+{
+    global $env, $seeded;
 
-	global $env, $seeded;
+    if ($value && str_starts_with($value, '(') && strpos($value, ':') > 0) {
+        $where  = explode(':', trim($value, '()'))[0];
+        $search = explode(':', trim($value, '()'))[1];
+        $value  = '(find)';
+    }
 
-	if ($value && str_starts_with($value, '(') && strpos($value, ':') > 0) {
-		$where = explode(':', trim($value, '()'))[0];
-		$search = explode(':', trim($value, '()'))[1];
-		$value = '(find)';
+    switch ($value) {
+    case 'null':
+    case null:
+        return 'NULL';
 
-	}
+    case '(APP_PASSWORD)':
+        return '"' . password_hash($env->appPassword, PASSWORD_BCRYPT) . '"';
 
-	switch ($value) {
+    case '(find)':
+        $found = isset($seeded[$search]) ? $seeded[$search] : "$where:$search";
 
-	case 'null':
-	case null:
-		return 'NULL';
+        return "\"$found\"";
 
-	case '(APP_PASSWORD)':
-		return '"' . password_hash($env->appPassword, PASSWORD_BCRYPT) . '"';
+    case '(parent)':
+        return $parent['handle'];
 
-	case '(find)':
-		$found = isset($seeded[$search]) ? $seeded[$search] : "$where:$search";
+    case '(now)':
+        return 'NOW()';
 
-		return "\"$found\"";
+    case '(now+month)':
+        $date = new DateTime();
+        $date->modify('+1 month');
 
-	case '(parent)':
-		return $parent['handle'];
+        return '"' . $date->format('Y-m-d H:i:s') . '"';
 
-	case '(now)':
-		return "NOW()";
+    case '(auto)':
+        $handle = Handle::create($parsed, $table);
+        // print_r($table->tablename);
+        // echo "-> ";
+        // print_r($parsed);
+        // echo "\n";
 
-	case '(now+month)':
-		$date = new DateTime();
-		$date->modify('+1 month');
-		return '"' . $date->format('Y-m-d H:i:s') . '"';
+        if ($table->tablename === 'accu_contacts') {
+            $seeded[$parsed->email] = $handle;
+        }
+        if ($table->tablename === 'proj_accesses') {
+            $seeded[$parsed->cmne] = $handle;
+        }
 
-	case '(auto)':
+        return '"' . $handle . '"';
 
-		$handle = Handle::create($parsed, $table);
-		// print_r($table->tablename);
-		// echo "-> ";
-		// print_r($parsed);
-		// echo "\n";
+    default:
+        $type = isset($table->columns[$key]) ? $table->columns[$key] : 'unkown';
 
-		if ($table->tablename === 'acc_contacts') {
-			$seeded[$parsed->email] = $handle;
-		}
-		if ($table->tablename === 'proj_accesses') {
-			$seeded[$parsed->cmne] = $handle;
-		}
+        switch ($type) {
+        case 'int':
+            return $value;
 
-		return '"' . $handle . '"';
+        case 'boolean':
+            return $value ? 1 : 0;
 
-	default:
+        case 'data':
+            return '"' . addslashes($value) . '"';
 
-		$type = isset($table->columns[$key]) ? $table->columns[$key] : 'unkown';
+        case 'base1':
+        case 'base26':
+        case 'mnemonic':
+            return '"' . addslashes($value) . '"';
 
-		switch ($type) {
-
-		case 'int':
-			return $value;
-
-		case 'boolean':
-			return $value ? 1 : 0;
-
-		case 'data':
-			return '"' . addslashes($value) . '"';
-
-		case 'base1':
-		case 'base26':
-		case 'mnemonic':
-			return '"' . addslashes($value) . '"';
-
-		default:
-			return '"' . addslashes($value) . '"';
-		}
-	}
-
+        default:
+            return '"' . addslashes($value) . '"';
+        }
+    }
 }
-//
 
 // INSERT INTO table_name (column1, column2, column3, ...)
 // VALUES (value1, value2, value3, ...);

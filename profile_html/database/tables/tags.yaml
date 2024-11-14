@@ -2,7 +2,7 @@
     label: Tags
     dependancy: profiles
 
-    tablename: acc_tags
+    tablename: accu_tags
 
     columns:
         id:         incremental

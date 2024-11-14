@@ -1,0 +1,22 @@
+---
+    label: Aggrigated
+    dependancy: projects
+
+    tablename: aggrigated_months
+
+    columns:
+        id:           incremental
+        handle:       handle
+        cmne:         mnemonic
+        project:      base1
+
+        year:         int      # what year is this record?
+        attribute:    handle   # what attribute is aggrigated here
+        name:         name     # name of attribute
+        buffer:       base1    # a or b
+
+        month(12):    int      # aggrigate on day/month/year for this attribute
+
+        deleted:      timestamp-null
+
+

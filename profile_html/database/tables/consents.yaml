@@ -2,7 +2,7 @@
     label: Consents
     dependancy: profiles
 
-    tablename: acc_consents
+    tablename: accu_consents
 
     columns:
         id:          incremental

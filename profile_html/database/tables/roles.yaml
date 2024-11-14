@@ -2,7 +2,7 @@
     label: Roles
     dependancy: contacts
 
-    tablename: acc_roles
+    tablename: crud_roles
 
     columns:
         id:          incremental

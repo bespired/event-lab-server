@@ -1,20 +1,18 @@
 <?php
 
-Trait Contacts {
+trait Contacts
+{
+    public function loadContacts($handle)
+    {
+        $sql = '';
+        $sql .= 'SELECT * FROM `accu_contacts` ';
+        $sql .= 'WHERE `deleted` IS NULL ';
+        $sql .= 'AND (`email` = "%" OR `handle` = "%" )';
 
-	public function loadContacts($handle) {
+        $sql = str_replace('%', $handle, $sql);
 
-		$sql = "";
-		$sql .= "SELECT * FROM `acc_contacts` ";
-		$sql .= "WHERE `deleted` IS NULL ";
-		$sql .= 'AND (`email` = "%" OR `handle` = "%" )';
+        $contacts = $this->db->select($sql);
 
-		$sql = str_replace('%', $handle, $sql);
-
-		$contacts = $this->db->select($sql);
-
-		return $contacts;
-
-	}
-
+        return $contacts;
+    }
 }

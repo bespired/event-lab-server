@@ -2,7 +2,7 @@
     label: Contacts
     dependancy: profiles
 
-    tablename: acc_contacts
+    tablename: accu_contacts
 
     columns:
         id:          incremental
