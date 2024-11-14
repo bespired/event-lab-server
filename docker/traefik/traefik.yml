@@ -1,4 +1,0 @@
-tls:
-  certificates:
-    - certFile: /certs/eventlab.com.crt
-      keyFile:  /certs/eventlab.com.key
