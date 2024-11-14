@@ -158,8 +158,11 @@ services:
       - docker.network
     volumes:
       - ./docker/redis:/bitnami/redis/data
+      - ./docker/redis:/data
+      - ./docker/redis/redis.conf:/usr/local/etc/redis/redis.conf
 
-    command: /bin/sh -c "redis-server --requirepass $$REDIS_ROOT_PASSWORD"
+    # command: /bin/sh -c "redis-server --requirepass $$REDIS_ROOT_PASSWORD && redis-server /usr/local/etc/redis/redis.conf"
+    command: /bin/sh -c "redis-server /usr/local/etc/redis/redis.conf --requirepass $$REDIS_ROOT_PASSWORD"
 
     environment:
       ALLOW_EMPTY_PASSWORD: ${REDIS_ALLOW_EMPTY_PASSWORD:-no}
