@@ -2,7 +2,7 @@
     id:         (auto)
     handle:     (auto)
     project:    a
-    table:      contacts
+    table:      accu_contacts
     name:       contact--email
     label:      Email
     cmne:       CEML
@@ -14,7 +14,7 @@
     handle:     (auto)
     project:    a
     name:       contact--firstname
-    table:      contacts
+    table:      accu_contacts
     label:      First name
     cmne:       CFNM
     column:     firstname
@@ -25,7 +25,7 @@
     handle:     (auto)
     project:    a
     name:       contact--lastname
-    table:      contacts
+    table:      accu_contacts
     label:      Last name
     cmne:       CLNM
     column:     lastname
@@ -36,7 +36,7 @@
     handle:     (auto)
     project:    a
     name:       contact--streetname
-    table:      contacts
+    table:      accu_contacts
     label:      Street name
     cmne:       CSNM
     column:     attr_1
@@ -47,7 +47,7 @@
     handle:     (auto)
     project:    a
     name:       contact--housenumber
-    table:      contacts
+    table:      accu_contacts
     label:      House number
     cmne:       CHNB
     column:     attr_2

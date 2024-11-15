@@ -3,9 +3,10 @@
     handle:         (auto)
     cmne:           OSYS
     project:        b
+    is_contact:     1
 
     relations:
-        contacts:
+        accu_contacts:
             -
                 id:         (auto)
                 handle:     (auto)
@@ -18,21 +19,4 @@
                 lastname:   Kassenaar
                 attr_1:     Mathijsenlaan
                 attr_2:     39
-        # tokens:
-        #     -
-        #         id:         (auto)
-        #         handle:     (auto)
-        #         project:    b
-        #         cmne:       ATKN
-        #         profile:    (parent)
-        #         contact:    (contact:test@bespired.nl)
-
-        #         access_1:   role
-        #         hash_1:     (APP_PASSWORD)
-        #         token_1:    ~  # use this to change password
-        #         expire_1:   (now+month)
-
-        #         access_2:   role
-        #         hash_2:     "Some fake hash"
-        #         expire_2:   "2020-12-01 10:00:00"
 

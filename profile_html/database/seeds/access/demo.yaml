@@ -1,0 +1,14 @@
+---
+    id:          (auto)
+    handle:      (auto)
+    cmne:        ACC0
+
+    clone:       ~
+    contact:     (contact:demo@demo.nl)
+    role:        editor        # role
+    project:     b             # on a project
+
+    area_1:     backend        # areas member - backend
+    expire_1:   (now+month)    # token expire date
+    hash_1:     (APP_PASSWORD) # password control hash
+    token_1:    ~              # password reset token

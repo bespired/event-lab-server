@@ -19,9 +19,9 @@ Class Profile {
 		}
 
 		$sql = "";
-		$sql .= "SELECT * FROM `attributes` ";
-		$sql .= "WHERE `attributes`.`project` = '$this->project'";
-		$sql .= "AND `attributes`.`deleted` IS NULL";
+		$sql .= "SELECT * FROM `sys_attributes` ";
+		$sql .= "WHERE `sys_attributes`.`project` = '$this->project'";
+		$sql .= "AND `sys_attributes`.`deleted_at` IS NULL";
 
 		$attributes = $this->db->select($sql);
 		foreach ($attributes as $attribute) {
@@ -59,16 +59,16 @@ Class Profile {
 		$this->getAttributes();
 
 		$profileSelect = $this->selectFrom('profiles');
-		$contactSelect = $this->selectFrom('contacts');
+		$contactSelect = $this->selectFrom('accu_contacts');
 
 		$selects = join(", ", array_merge($profileSelect, $contactSelect));
 
 		$sql = "";
 		$sql .= "SELECT $selects FROM `contacts` ";
-		$sql .= "INNER JOIN `profiles` ON `contacts`.`profile` = `profiles`.`handle`";
-		$sql .= "WHERE `contacts`.`project` = '$this->project' ";
-		$sql .= "AND `contacts`.`email` = '$key' ";
-		$sql .= "AND `profiles`.`deleted` IS NULL";
+		$sql .= "INNER JOIN `profiles` ON `accu_contacts`.`profile` = `profiles`.`handle`";
+		$sql .= "WHERE `accu_contacts`.`project` = '$this->project' ";
+		$sql .= "AND `accu_contacts`.`email` = '$key' ";
+		$sql .= "AND `profiles`.`deleted_at` IS NULL";
 
 		$results = $this->db->first($sql);
 

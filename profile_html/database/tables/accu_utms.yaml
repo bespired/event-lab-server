@@ -2,16 +2,17 @@
     label: Tags
     dependancy: profiles
 
-    tablename: accu_tags
+    tablename: accu_utms
 
     columns:
         id:         incremental
         handle:     handle
-        profile:    handle
         project:    base1
+
+        profile:    handle
 
         repeats:
             amount: 100
             columns:
-                tag:   base1
+                utm:   base1
                 date:  timestamp-null

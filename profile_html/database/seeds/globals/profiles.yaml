@@ -1,40 +1,70 @@
 ---
     id:         (auto)
     handle:     (auto)
-    name:       profile--tags
-    table:      profiles
+    name:       result--tags
+    table:      results
     label:      Tags
-    cmne:       PTAG
+    cmne:       RTAG
     column:     tags
     datatype:   concat
     valuetype:  single
 ---
     id:         (auto)
     handle:     (auto)
-    name:       profile--consents
-    table:      profiles
+    name:       result--consents
+    table:      results
     label:      Consents
-    cmne:       PCST
+    cmne:       RCST
     column:     consents
     datatype:   concat
     valuetype:  single
 ---
     id:         (auto)
     handle:     (auto)
-    name:       profile--segments
-    table:      profiles
+    name:       result--segments
+    table:      results
     label:      Segments
-    cmne:       PSEG
+    cmne:       RSEG
     column:     segments
     datatype:   concat
     valuetype:  single
 ---
     id:         (auto)
     handle:     (auto)
-    name:       profile--journeys
-    table:      profiles
+    name:       result--journeys
+    table:      results
     label:      Journeys
-    cmne:       PJRN
+    cmne:       RJRN
     column:     journeys
+    datatype:   concat
+    valuetype:  single
+---
+    id:         (auto)
+    handle:     (auto)
+    name:       result--labels
+    table:      results
+    label:      Labels
+    cmne:       RLBL
+    column:     labels
+    datatype:   concat
+    valuetype:  single
+---
+    id:         (auto)
+    handle:     (auto)
+    name:       result--scores
+    table:      results
+    label:      Scores
+    cmne:       RSCR
+    column:     scores
+    datatype:   concat
+    valuetype:  single
+---
+    id:         (auto)
+    handle:     (auto)
+    name:       result--utms
+    table:      results
+    label:      UTMs
+    cmne:       RUTM
+    column:     utms
     datatype:   concat
     valuetype:  single

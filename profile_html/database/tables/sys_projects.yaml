@@ -2,7 +2,7 @@
     label: Projects
     dependancy: ~
 
-    tablename: projects
+    tablename: sys_projects
 
     columns:
         id:         incremental
@@ -12,7 +12,7 @@
         name:       name
         label:      label
         domain:     name
-        deleted:    timestamp
+        deleted_at:    timestamp
 
     seeds: projects
 

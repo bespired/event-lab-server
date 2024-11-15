@@ -5,7 +5,7 @@
 
     clone:       ~
     contact:     (contact:joeri@bespired.nl)
-    role:        super-admin   # role
+    role:        bespired      # role
     project:     a             # on a project
 
     area_1:     backend        # areas member - backend
@@ -25,4 +25,12 @@
     contact:     (contact:joeri@bespired.nl)
     role:        ~             # role
     project:     b             # on a project
+---
+    id:          (auto)
+    handle:      (auto)
+    cmne:        ACC0
 
+    clone:       (proj_acc:AC00)
+    contact:     (contact:test@bespired.nl)
+    role:        ~             # role
+    project:     b             # on a project

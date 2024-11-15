@@ -18,9 +18,8 @@
         firstname:   name
         lastname:    name
 
-        deleted:     timestamp-null
+        deleted_at:  timestamp-null
 
         attr(30):    name
         large(10):   large
 
-    # seeds: names

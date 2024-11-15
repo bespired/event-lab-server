@@ -1,6 +1,6 @@
 ---
     label: Roles
-    dependancy: contacts
+    dependancy: accu_contacts
 
     tablename: crud_roles
 
@@ -13,7 +13,7 @@
         role:        name
         cmne:        mnemonic
 
-        deleted:     timestamp-null
+        deleted_at:  timestamp-null
 
         attr(50):    crud
 

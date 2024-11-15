@@ -2,16 +2,17 @@
     label: Timelines
     dependancy: profiles
 
-    tablename: visit_timelines
+    tablename: track_timelines
 
     columns:
         id:          incremental
         handle:      handle
-        profile:     handle
         cmne:        mnemonic
         project:     base1
-        created_at:  timestamp  # action time / last visit
+
+        profile:     handle
         service:     name
+        created_at:  timestamp  # action time / last visit
 
         fingerprint: name
         vistcode:    date-code # day of year - year  142-24

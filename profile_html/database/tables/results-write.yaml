@@ -1,0 +1,32 @@
+---
+    label: Result buffer write
+    dependancy: sys_projects
+
+    tablename: results_write
+
+    columns:
+        id:         incremental
+        handle:     handle
+        project:    base1
+
+        profile:    handle
+
+        ready:             boolean   # 0 | 1 => all records not 0 makes swap possible
+        status:            name      # done|calculating|collected|collecting|reset
+
+        collected_at:      timestamp-null
+        calculated_at:     timestamp-null
+        accu_in_segments:  concat
+        accu_in_panels:    concat
+        accu_has_tags:     concat
+        accu_has_labels:   concat
+        accu_has_utms:     concat
+        accu_has_consents: concat
+        accu_on_journeys:  concat
+
+        deleted_at:    timestamp-null
+
+
+# RENAME TABLE results_read TO results_write, results_write To results_read;
+# set collected on 0 for results_write
+# set status to reset for results_write

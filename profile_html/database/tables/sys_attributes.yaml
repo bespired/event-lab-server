@@ -1,14 +1,14 @@
 ---
     label: Attributes
-    dependancy: projects
+    dependancy: sys_projects
 
-    tablename: proj_attributes
+    tablename: sys_attributes
 
     columns:
         id:          incremental
         handle:      handle
         project:     base1
-        deleted:     timestamp-null
+        deleted_at:     timestamp-null
 
         table:       name        # was enum[ profiles/journeys/contacts/timelines
                                  #       /events/groups/tags/rights/consents/user ]

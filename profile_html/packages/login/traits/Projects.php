@@ -8,8 +8,8 @@ Trait Projects {
 		$selects = "`handle`, `project`, `cmne`, `name`, `label`, `domain`";
 
 		$sql = "";
-		$sql .= "SELECT $selects FROM `projects` ";
-		$sql .= "WHERE `deleted` IS NULL ";
+		$sql .= "SELECT $selects FROM `sys_projects` ";
+		$sql .= "WHERE `deleted_at` IS NULL ";
 		$sql .= "AND (`project` IN ($joinlist))";
 
 		$projects = $this->db->select($sql);

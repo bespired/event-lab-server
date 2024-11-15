@@ -1,6 +1,6 @@
 ---
     label: Profiles
-    dependancy: projects
+    dependancy: sys_projects
 
     tablename: profiles
 
@@ -10,30 +10,15 @@
         cmne:       mnemonic
         project:    base1
 
+        is_contact:      boolean
+
         visitcount:      int
         firstvistcode:   date-code # day of year - year  142-24
         firstvistdate:   timestamp-null
         lastvistcode:    date-code
         lastvistdate:    timestamp-null
 
-        a_ready:         boolean
-        a_collected_at:  timestamp-null
-        a_calculated_at: timestamp-null
-        a_accu_segments: concat
-        a_accu_panels:   concat
-        a_accu_tags:     concat
-        a_accu_consents: concat
-        a_accu_journeys: concat
-
-        b_ready:         boolean
-        b_collected_at:  timestamp-null
-        b_calculated_at: timestamp-null
-        b_accu_segments: concat
-        b_accu_panels:   concat
-        b_accu_consents: concat
-        b_accu_tags:     concat
-        b_accu_journeys: concat
-
-        deleted:    timestamp-null
+        created_at:    timestamp-null
+        deleted_at:    timestamp-null
 
     seeds: owners

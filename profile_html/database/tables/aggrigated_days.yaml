@@ -1,6 +1,6 @@
 ---
-    label: Aggrigated
-    dependancy: projects
+    label: Aggrigated Days
+    dependancy: sys_projects
 
     tablename: aggrigated_days
 
@@ -18,7 +18,7 @@
 
         day(32):      int      # aggrigate on day/month/year for this attribute
 
-        deleted:      timestamp-null
+        deleted_at:      timestamp-null
 
 
 # slots 1-31 are used to store values per day in datetype day

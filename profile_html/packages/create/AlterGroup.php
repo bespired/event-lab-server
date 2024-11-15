@@ -20,9 +20,9 @@ Class AlterGroup {
 		}
 
 		$sql = "";
-		$sql .= "SELECT * FROM `attributes` ";
-		$sql .= "WHERE `attributes`.`project` = '$this->project'";
-		$sql .= "AND `attributes`.`deleted` IS NULL";
+		$sql .= "SELECT * FROM sys_attributes ";
+		$sql .= "WHERE `sys_attributes`.`project` = '$this->project'";
+		$sql .= "AND `sys_attributes`.`deleted_at` IS NULL";
 
 		$attributes = $this->db->select($sql);
 		foreach ($attributes as $attribute) {

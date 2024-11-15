@@ -2,12 +2,11 @@
     label: Globals
     dependancy: ~
 
-    tablename: globals
+    tablename: sys_globals
 
     columns:
         id:          incremental
         handle:      handle
-        deleted:     timestamp-null
 
         table:       name        # was enum[ profiles/journeys/contacts/timelines
                                  #       /events/groups/tags/rights/consents/user ]
@@ -20,6 +19,8 @@
         extra:       large       # data for consent or tag / maybe this should be blob?
         datatype:    name        # how sensitive is this data
         valuetype:   enum[pointer/single/array/object]
+
+        deleted_at:  timestamp-null
 
     seeds: globals
 

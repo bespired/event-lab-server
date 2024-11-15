@@ -1,0 +1,39 @@
+accu types:
+
+consents
+contacts
+labels
+tags
+utms
+tbm: scores   (customer journey)
+tbm: journeys (automation journey)
+
+
+UTMS are defined in attributes as  type-name pair
+100 uniq utms can be attached to a profile
+
+TAGS are defined in attributes as   name  and attached or detached to a profile.
+They are querable as attached or detached, and attached can have a date.
+100 tags can be attached to a profile
+
+LABELS are defined in attributes with a given  name  and attached or detached to a profile.
+The given name can be made in a journey. So they are sort-of tags, but with variable name.
+They are querable as attached or detached, and attached can have a date.
+100 labels can be attached to a profile
+
+CONSENTS are as tags, but have 4 states: not-set, pre-op, opt-in, opt-out.
+They are querable as not-set, pre-op, opt-in and opt-out all with dates
+30 consents can be attached to a profile
+
+JOURNEYS are as tags, but have 4 states: not-set, start, failed, reached.
+
+SCORES tbd.
+
+PANELS   are like tags. Profile is in panel or not 0, 1
+SEGMENTS are like tags. Profile is in segment or not 0, 1
+They are querable as true or false.
+
+
+CONTACTS  are defined in attributes as  name and is a string.
+They are querable as a string.
+

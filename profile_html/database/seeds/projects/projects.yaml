@@ -6,7 +6,7 @@
     name:       system
     label:      System
     domain:     eventlab.com
-    deleted:    null
+    deleted_at: null
 ---
     id:         (auto)
     handle:     (auto)
@@ -15,4 +15,4 @@
     name:       some-site
     label:      Some website website.org
     domain:     website.org
-    deleted:    null
+    deleted_at: null

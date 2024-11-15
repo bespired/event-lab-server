@@ -1,6 +1,6 @@
 ---
-    label: Aggrigated
-    dependancy: projects
+    label: Aggrigated Months
+    dependancy: sys_projects
 
     tablename: aggrigated_months
 
@@ -17,6 +17,6 @@
 
         month(12):    int      # aggrigate on day/month/year for this attribute
 
-        deleted:      timestamp-null
+        deleted_at:      timestamp-null
 
 

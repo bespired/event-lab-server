@@ -10,6 +10,14 @@
     id:         (auto)
     handle:     (auto)
     project:    a
+    label:      Bespired
+    cmne:       AUBE
+    role:       bespired
+    attr_1:     CRUD
+---
+    id:         (auto)
+    handle:     (auto)
+    project:    a
     label:      Super Admin
     cmne:       AUSU
     role:       super-admin
@@ -48,7 +56,17 @@
     attr_11:    CRUD
     attr_12:    CRUD
     attr_13:    CRUD
-
+---
+    id:         (auto)
+    handle:     (auto)
+    project:    a
+    label:      Marketeer
+    cmne:       AMKT
+    role:       marketeer
+    attr_4:     -R--
+    attr_11:    CRUD
+    attr_12:    CRUD
+    attr_13:    CRUD
 
 # role null          attr_1: -R-- attr_2: -R-- attr_3: null attr_10: null
 # role super-admin   attr_1: CRUD attr_2: CRUD attr_3: CRUD attr_10: CRUD
