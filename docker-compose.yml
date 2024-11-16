@@ -54,7 +54,7 @@ services:
       # - ./docker/apache/ssl/mycert.crt:/etc/ssl/certs/mycert.crt
       # - ./docker/apache/ssl/mycert.key:/etc/ssl/private/mycert.key
     labels:
-      - traefik.http.routers.profile.rule=Host(`eventlab.com`) && PathPrefix(`/--/profile`)
+      - traefik.http.routers.profile.rule=PathPrefix(`/--/profile`)
       - traefik.http.routers.profile.tls=true
       - traefik.http.routers.profile.priority=100
 
@@ -74,7 +74,7 @@ services:
     volumes:
       - ./tracker_html:/var/www/html/
     labels:
-      - traefik.http.routers.tracker.rule=Host(`eventlab.com`) && PathPrefix(`/--/tracker`)
+      - traefik.http.routers.tracker.rule=PathPrefix(`/--/tracker`)
       - traefik.http.routers.tracker.priority=110
       - traefik.http.routers.tracker.tls=true
 

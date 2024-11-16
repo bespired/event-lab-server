@@ -80,7 +80,7 @@ class Jwt {
 	public function expired($token) {
 		$this->parse($token);
 
-		return $this->parsed->payload->exp > time();
+		return $this->parsed->payload->exp < time();
 	}
 
 	private function decode($encoded) {

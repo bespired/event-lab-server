@@ -12,13 +12,51 @@ Class Router {
 	public $query;
 	public $headers;
 	public $cookies;
+	public $contact;
 	public $uri;
 
 	// all need to work:
 	// https://localhost/--/profile/0/info
 	// https://localhost/--/profile/info
 
-	function __construct() {
+	public function protected($needed = null) {
+
+		if (!isset($this->headers->xAuthToken)) {
+			http_response_code(401);
+			echo "No token, no entry";
+			exit;
+		}
+
+		include __DIR__ . '/../packages/utils/Jwt.php';
+		$token = $this->headers->xAuthToken;
+		$jwt = new JWT();
+
+		$validates = $jwt->validate($token);
+
+		if (!$validates) {
+			http_response_code(401);
+			echo "Wrong token, no entry";
+			exit;
+		}
+
+		$expired = $jwt->expired($token);
+
+		if ($expired) {
+			http_response_code(401);
+			echo "Old token, no entry";
+			exit;
+		}
+
+		$parsed = $jwt->parse($token);
+
+		$contact = $parsed->payload->hdl;
+
+		$parts = explode('-', $contact);
+		$this->contact = sprintf('%s-cont-%s', $parts[0], $parts[1]);
+
+	}
+
+	public function __construct() {
 
 		$this->service = 'profile';
 		$this->package = 'root';

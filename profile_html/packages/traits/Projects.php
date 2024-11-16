@@ -10,7 +10,23 @@ Trait Projects {
 		$sql = "";
 		$sql .= "SELECT $selects FROM `sys_projects` ";
 		$sql .= "WHERE `deleted_at` IS NULL ";
-		$sql .= "AND (`project` IN ($joinlist))";
+		$sql .= "AND `project` IN ($joinlist)";
+
+		$projects = $this->db->select($sql);
+
+		return $projects;
+
+	}
+
+	public function loadProjectByName($name) {
+
+		$selects = "`handle`, `project`, `cmne`, `name`, `label`, `domain`";
+		$sql = "";
+		$sql .= "SELECT $selects FROM `sys_projects` ";
+		$sql .= "WHERE `deleted_at` IS NULL ";
+		$sql .= 'AND `domain` LIKE "%#%" ';
+
+		$sql = str_replace('#', $name, $sql);
 
 		$projects = $this->db->select($sql);
 

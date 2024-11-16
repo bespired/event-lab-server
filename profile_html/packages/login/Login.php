@@ -1,8 +1,8 @@
 <?php
 
-include_once __DIR__ . '/traits/Contacts.php';
-include_once __DIR__ . '/traits/Access.php';
-include_once __DIR__ . '/traits/Projects.php';
+include_once __DIR__ . '/../traits/Contacts.php';
+include_once __DIR__ . '/../traits/Access.php';
+include_once __DIR__ . '/../traits/Projects.php';
 
 class Login {
 	use Access;
@@ -78,7 +78,7 @@ class Login {
 			$handles = null;
 			$contacts = $this->loadContacts($router->payload->username);
 			if ($contacts) {
-				$handles = array_map(fn($a) => '"' . $a['handle'] . '"', $contacts);
+				$handles = array_map(fn($a) => $a['handle'], $contacts);
 				foreach ($contacts as $contact) {
 					$profiles[$contact['project']] = $contact['profile'];
 				}
