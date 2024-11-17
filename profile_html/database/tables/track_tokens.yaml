@@ -1,0 +1,19 @@
+---
+    label: Tokens
+    dependancy: profiles
+
+    tablename: track_tokens
+
+    columns:
+        id:          incremental
+        handle:      handle
+        profile:     handle
+        project:     base1
+
+        repeats:
+            amount: 30
+            columns:
+                token: name
+
+
+# per contact have some "random" tokens to identify contact when returning

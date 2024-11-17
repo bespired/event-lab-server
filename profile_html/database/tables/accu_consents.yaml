@@ -11,6 +11,9 @@
         cmne:        mnemonic
         project:     base1
 
+        is_changed:   bit
+        is_new:       bit
+
         state(30):   base1
         extend(30):  data
         predate(30): timestamp-null

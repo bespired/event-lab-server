@@ -11,6 +11,9 @@
 
         profile:    handle
 
+        is_changed:   bit
+        is_new:       bit
+
         repeats:
             amount: 100
             columns:
