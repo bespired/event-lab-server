@@ -45,7 +45,7 @@
 	<img src="/assets/route.svg" />
 	<div class="serv">Server</div>
 	<div class="event" >EVENT LAB</div>
-	<div class="know">We know where you've been</div>
+	<div class="know">Helping you to make the right decision</div>
 
 </body>
 </html>
