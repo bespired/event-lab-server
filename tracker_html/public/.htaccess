@@ -1,4 +1,9 @@
 RewriteEngine On
+
+RewriteRule /start.js  %{DOCUMENT_ROOT}/start.js [L]
+RewriteRule /post.php  %{DOCUMENT_ROOT}/post.php [L]
+RewriteRule /start.php %{DOCUMENT_ROOT}/start.php [L]
+
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule . /index.php [L]
