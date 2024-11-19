@@ -8,6 +8,7 @@
         id:          incremental
         handle:      handle
         profile:     handle
+        contact:     handle
         project:     base1
 
         repeats:
