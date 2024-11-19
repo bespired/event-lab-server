@@ -1,4 +1,6 @@
 <?php
+// Task of this script is to return a storage token,
+// and a session token.
 
 header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
 header("Access-Control-Allow-Origin:*");

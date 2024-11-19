@@ -21,6 +21,9 @@ RUN pecl install yaml \
     && echo "extension=yaml.so" > /usr/local/etc/php/conf.d/docker-php-ext-yaml.ini \
     && docker-php-ext-enable yaml
 
+RUN pecl install -o -f redis \
+    && docker-php-ext-enable redis
+
 # Install Composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 

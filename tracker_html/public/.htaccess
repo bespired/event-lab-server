@@ -1,8 +1,9 @@
 RewriteEngine On
 
 RewriteRule /start.js  %{DOCUMENT_ROOT}/start.js [L]
-RewriteRule /post.php  %{DOCUMENT_ROOT}/post.php [L]
-RewriteRule /start.php %{DOCUMENT_ROOT}/start.php [L]
+RewriteRule /post   %{DOCUMENT_ROOT}/post.php [L]
+RewriteRule /start  %{DOCUMENT_ROOT}/start.php [L]
+RewriteRule /store  %{DOCUMENT_ROOT}/store.php [L]
 
 # http://{domain}/--/tracker/{pixel-token}/pixel.gif
 RewriteRule /pixel.gif %{DOCUMENT_ROOT}/pixel.php [L]
