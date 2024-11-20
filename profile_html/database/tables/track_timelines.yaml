@@ -11,13 +11,26 @@
         project:     base1
 
         profile:     handle
+        session:     name
+
         service:     name
         created_at:  timestamp  # action time / last visit
 
-        fingerprint: name
-        vistcode:    date-code # day of year - year  142-24
-        vistdate:    timestamp-null
+        visitcode:   date-code # day of year - year  142-24
+        visitdate:   timestamp-null
 
-        attr(12):    name
+        category:    name
+        action:      name
+        value:       name
+
+        url:         large
+        domain:      name
+        path:        large
+        query:       large
+        fragment:    name
+
+        fingerprint: name
+
+        attr(8):     name
         large(4):    large
 

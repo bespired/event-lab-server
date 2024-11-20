@@ -12,11 +12,10 @@
 
         year:         int      # what year is this record?
         attribute:    handle   # what attribute is aggrigated here
+        timeline:     name     # what timeline is aggrigated here
         name:         name     # name of attribute
-        buffer:       base1    # a or b
 
-        month(12):    int      # aggrigate on day/month/year for this attribute
+        month(12):    int      # aggrigate on month for this attribute
 
         deleted_at:      timestamp-null
-
 

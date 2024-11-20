@@ -68,3 +68,13 @@
     column:     utms
     datatype:   concat
     valuetype:  single
+---
+    id:         (auto)
+    handle:     (auto)
+    name:       result--mails
+    table:      results
+    label:      Mails
+    cmne:       RMLS
+    column:     mails
+    datatype:   concat
+    valuetype:  single

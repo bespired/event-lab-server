@@ -14,9 +14,12 @@
         is_changed:   bit
         is_new:       bit
 
-        state(30):   base1
-        extend(30):  data
-        predate(30): timestamp-null
-        optdate(30): timestamp-null
-        outdate(30): timestamp-null
+        repeats:
+            amount: 30
+            columns:
+                state:   base1
+                extend:  data
+                predate: timestamp-null
+                optdate: timestamp-null
+                outdate: timestamp-null
 

@@ -21,8 +21,9 @@
         accu_has_tags:     concat
         accu_has_labels:   concat
         accu_has_utms:     concat
-        accu_has_consents: concat
-        accu_on_journeys:  concat
+        accu_time_utms:    concat # what is this? all utms?  or only utms marketeer needs calculated?
+        accu_time_mails:   concat # what is this? all mails? no only mails defined/used in panels.
+        accu_on_journeys:  concat # what is this? all journeys? I think these slots are based on panel builders...
 
         deleted_at:    timestamp-null
 

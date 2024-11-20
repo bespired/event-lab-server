@@ -11,14 +11,13 @@
         project:      base1
 
         year:         int      # what year is this record?
-        count:        int      # aggrigate on day/month/year for this attribute
+        count:        int      # aggrigate year for this attribute
 
         attribute:    handle   # what attribute is aggrigated here
+        timeline:     name     # what timeline is aggrigated here
         name:         name     # name of attribute
-        buffer:       base1    # a or b
 
-        deleted_at:      timestamp-null
-
+        deleted_at:   timestamp-null
 
 # slots 1-31 are used to store values per day in datetype day
 # slots 1-12 are used to store values per month in datetype month

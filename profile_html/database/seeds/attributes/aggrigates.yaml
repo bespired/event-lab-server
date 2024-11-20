@@ -1,0 +1,24 @@
+---
+    id:          (auto)
+    handle:      (auto)
+    project:     a
+    name:        aggrigate--mail-pixel-a1
+    table:       tracker
+    description: aggrigate mail 1
+    label:       Mail 1
+    cmne:        AY24
+    column:      ~
+    datatype:    value
+    valuetype:   pointer
+---
+    id:          (auto)
+    handle:      (auto)
+    project:     b
+    name:        aggrigate--mail-pixel-b1
+    table:       tracker
+    description: aggrigate mail 1
+    label:       Mail 1
+    cmne:        AY24
+    column:      ~
+    datatype:    value
+    valuetype:   pointer

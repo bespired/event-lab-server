@@ -16,13 +16,13 @@
         role:        name  # attr defined types who can do stuff on-site and backend
 
         email:       name
-        blacklist:   boolean
-        in_queue:    large
         firstname:   name
         lastname:    name
+        blacklist:   boolean
+        in_queue:    base1
 
         deleted_at:  timestamp-null
 
-        attr(30):    name
+        attr(50):    name
         large(10):   large
 
