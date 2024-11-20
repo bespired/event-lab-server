@@ -1,6 +1,6 @@
 RewriteEngine On
 
-RewriteRule /start.js  %{DOCUMENT_ROOT}/start.js [L]
+RewriteRule /start.js  %{DOCUMENT_ROOT}/assets/start.js [L]
 RewriteRule /post   %{DOCUMENT_ROOT}/post.php [L]
 RewriteRule /start  %{DOCUMENT_ROOT}/start.php [L]
 

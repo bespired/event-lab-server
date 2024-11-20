@@ -9,6 +9,7 @@
 include_once __DIR__ . '/../utils/MyDB.php';
 include_once __DIR__ . '/../utils/MyCache.php';
 include_once __DIR__ . '/../utils/Handle.php';
+include_once __DIR__ . '/../utils/Tools.php';
 
 $redis = new MyCache();
 
@@ -48,8 +49,8 @@ while ($atomic) {
     $slots['profile']    = $profile;
     $slots['created_at'] = date('Y-m-d H:i:s');
     $slots['cmne']       = $cmne;
-    $slots['visitcode']  = sprintf('%03s-%02s', date('z', $time), substr(date('Y', $time), 2, 2));
-    $slots['visitdate']  = date('Y-m-d H:i:s', $time);
+    $slots['visitcode']  = Tools::visitCode($time);
+    $slots['visitdate']  = Tools::visitDate($time);
 
     $slots['category'] = $category;
     $slots['action']   = $action;

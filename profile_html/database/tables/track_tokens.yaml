@@ -7,8 +7,8 @@
     columns:
         id:          incremental
         handle:      handle
-        profile:     handle
-        contact:     handle
+        profile:     handle-null
+        contact:     handle-null
         project:     base1
 
         repeats:
