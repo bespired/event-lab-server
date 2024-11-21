@@ -53,3 +53,7 @@ class MyCache
         return $this->redis->exists($quotedKey);
     }
 }
+
+// echo 'AUTH redis\nping' | redis-cli
+// echo -e 'AUTH PASSWORD\nkeys *' | redis-cli
+// echo -e 'AUTH aYVX7EwVmmxKPCDmwMtyKVge8oLd2t82\nCONFIG SET requirepass ""' | redis-cli
