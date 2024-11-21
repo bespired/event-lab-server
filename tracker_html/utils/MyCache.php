@@ -10,7 +10,7 @@ class MyCache
         include_once 'Dot.php';
         $env = Dot::handle();
 
-        if (! $env->redisHost) {
+        if (!$env->redisHost) {
             echo "missing redisHost in env\n";
             exit;
         }
@@ -25,31 +25,31 @@ class MyCache
         $this->redis->close();
     }
 
-    // RPUSH tokens a02vk-prof-Dplhnl98:mail:pixel
-    public function storeToken($token, $category, $action)
+    public function labWrite($token, $payload)
     {
-        $value = sprintf('%s:%s:%s:%s', $token, $category, $action, time());
-        $this->redis->rpush('tokens', $value);
+        $quotedKey = addslashes($token);
+        $value     = $payload ? json_encode($payload) : null;
+        $this->redis->setex($quotedKey, STL, $value);
     }
 
-    public function topToken()
+    public function labRead($token)
     {
-        return $this->redis->rpop('tokens');
+        $quotedKey = addslashes($token);
+        $value     = $this->redis->get($quotedKey);
+
+        return $value ? json_decode($value) : null;
     }
 
-    public function htStart()
+    public function labDelete($token)
     {
-        $this->redis->setex('handling-tokens', 10, true);
+        $quotedKey = addslashes($token);
+        $this->redis->del($quotedKey);
     }
 
-    public function htEnd()
+    public function isLabStored($token)
     {
-        $this->redis->del('handling-tokens');
-    }
+        $quotedKey = addslashes($token);
 
-    public function isHT()
-    {
-        return $this->redis->exists('handling-tokens');
+        return $this->redis->exists($quotedKey);
     }
-
 }

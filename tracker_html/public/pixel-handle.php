@@ -1,15 +1,15 @@
 <?php
 
+include_once __DIR__ . '/../utils/MyDB.php';
+include_once __DIR__ . '/../utils/MyCache.php';
+include_once __DIR__ . '/../utils/Handle.php';
+include_once __DIR__ . '/../utils/Tools.php';
+
 // Task of this script is to read from REDIS
 // tokens list and store the tokens on the timeline
 //
 // start only when not already doing this task
 // and continue until token list is empty
-
-include_once __DIR__ . '/../utils/MyDB.php';
-include_once __DIR__ . '/../utils/MyCache.php';
-include_once __DIR__ . '/../utils/Handle.php';
-include_once __DIR__ . '/../utils/Tools.php';
 
 $redis = new MyCache();
 

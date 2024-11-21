@@ -1,10 +1,10 @@
 <?php
 
+include_once '../utils/MyCache.php';
+
 // Task of this script is to store the token
 // in the pixel request on the REDIS tokens list,
 // kick the handler, and return a transparent GIF
-
-include_once '../utils/MyCache.php';
 
 // [REQUEST_URI] => /--/tracker/{token}/pixel.gif
 $token = explode('/', $_SERVER['REQUEST_URI'])[3];
