@@ -13,14 +13,14 @@ include_once __DIR__ . '/../utils/Tools.php';
 
 $redis = new MyCache();
 
-if ($redis->isHT()) {
+if ($redis->isHT('tokens')) {
     $redis->close();
     exit;
 }
 
 $db = new MyDB();
 
-$redis->htStart();
+$redis->htStart('tokens');
 
 // Read Attributes of where table=tracker
 // so name can be compared to aggrigate--/category/-/action/-/value/
@@ -75,6 +75,6 @@ while ($atomic) {
 // $logsToKeep = file_get_contents('tmp.log', null, null, -125000, 125000);
 // file_put_contents('tmp.log', $logsToKeep);
 
-$redis->htEnd();
+$redis->htEnd('tokens');
 $redis->close();
 $db->close();

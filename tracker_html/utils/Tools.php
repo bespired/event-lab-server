@@ -1,8 +1,5 @@
 <?php
 
-define('TTL', 60 * 60 * 12);
-define('STL', 60 * 30);
-
 class Tools
 {
     public static function visitCode($time)

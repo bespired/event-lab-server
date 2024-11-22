@@ -10,7 +10,7 @@ class MyCache
         include_once 'Dot.php';
         $env = Dot::handle();
 
-        if (!$env->redisHost) {
+        if (! $env->redisHost) {
             echo "missing redisHost in env\n";
             exit;
         }
@@ -24,6 +24,8 @@ class MyCache
     {
         $this->redis->close();
     }
+
+    // -- START TRACK HELPERS
 
     public function labWrite($token, $payload)
     {
@@ -52,6 +54,37 @@ class MyCache
 
         return $this->redis->exists($quotedKey);
     }
+
+    // -- PIXEL HELPERS
+
+    public function storeToken($token, $category, $action)
+    {
+        $value = sprintf('%s:%s:%s:%s', $token, $category, $action, time());
+        $this->redis->rpush('tokens', $value);
+    }
+
+    public function topToken()
+    {
+        return $this->redis->rpop('tokens');
+    }
+
+    // -- HANDLING HELPERS
+
+    public function htStart($category)
+    {
+        $this->redis->setex('handling-' . $category, 10, true);
+    }
+
+    public function htEnd($category)
+    {
+        $this->redis->del('handling-' . $category);
+    }
+
+    public function isHT($category)
+    {
+        return $this->redis->exists('handling-' . $category);
+    }
+
 }
 
 // echo 'AUTH redis\nping' | redis-cli
