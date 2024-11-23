@@ -59,13 +59,26 @@ class MyCache
 
     public function storeToken($token, $category, $action)
     {
-        $value = sprintf('%s:%s:%s:%s', $token, $category, $action, time());
+        $value = sprintf('%s::%s::%s::%s', $token, $category, $action, time());
         $this->redis->rpush('tokens', $value);
     }
 
     public function topToken()
     {
         return $this->redis->rpop('tokens');
+    }
+
+    // -- LANDING HELPERS
+
+    public function storeVisit($visitor, $session, $data)
+    {
+        $value = sprintf('%s::%s::%s::%s', $visitor, $session, time(), $data);
+        $this->redis->rpush('visits', $value);
+    }
+
+    public function topVisit()
+    {
+        return $this->redis->rpop('visits');
     }
 
     // -- HANDLING HELPERS

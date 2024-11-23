@@ -35,13 +35,6 @@ if (isset($payload['href'])) {
     }
 }
 
-// $sets = [
-//     'first'   => 'first',    // first visit ever
-//     'visitor' => 'visitor',  // returning visit
-//     'session' => 'session',  // in same session
-//     'elrt'    => 'contact',  // landing with elrt
-// ];
-
 $redis = new MyCache();
 
 $response = [
@@ -58,8 +51,14 @@ if (isset($payload['session'])) {
 
     $visitor = $payload['visitor'];
     $session = $payload['session'];
+    $mode    = 'in-a-session';
 
-    $mode = 'in-a-session';
+    // $session === 'undefined' is a creepy error...
+    if ((! $session) || (! validToken($session))) {
+        $session = Token::createSession();
+        $mode    = 'in-a-new-session';
+    }
+
 } else {
     if (isset($payload['first'])) {
         if (! isset($payload['elrt'])) {
@@ -87,7 +86,8 @@ if (isset($payload['session'])) {
         if ($redis->isLabStored($visitor)) {
             $session = $redis->labRead($visitor);
         }
-        if ((! $session) || ($session === 'null')) {
+
+        if ((! $session) || (! validToken($session))) {
             $session = Token::createSession();
         }
 
@@ -107,17 +107,29 @@ if (isset($payload['session'])) {
     }
 }
 
-// PUT ON REDIS TO HANDLE ...
-//  $redis->storeSession($visitor, $session);
-//  $cmd = 'php start-handle.php > /dev/null 2>/dev/null &';
-//  shell_exec($cmd);
+// file_put_contents('tmp.log',
+//     sprintf("%s %s %s %s %s \n",
+//         date('Y.m.d H:i:s'), $visitor, $session, $mode, json_encode($_SERVER)),
+//     FILE_APPEND | LOCK_EX);
 
-file_put_contents('tmp.log',
-    sprintf("%s %s %s %s %s \n",
-        date('Y.m.d H:i:s'), $visitor, $session, $mode, json_encode($_SERVER)),
-    FILE_APPEND | LOCK_EX);
-
+// store session token
 $redis->labWrite($visitor, $session);
+
+// PUT ON REDIS TO HANDLE ...
+$server = [];
+$items  = [
+    'userAgent'    => 'HTTP_USER_AGENT',
+    'queryString'  => 'QUERY_STRING',
+    'forwardedFor' => 'HTTP_X_FORWARDED_FOR',
+    'realIp'       => 'HTTP_X_REAL_IP',
+];
+foreach ($items as $key => $itemname) {
+    $server[$key] = isset($_SERVER[$itemname]) ? $_SERVER[$itemname] : null;
+}
+
+$redis->storeVisit($visitor, $session, json_encode($server));
+$cmd = 'php track-handle.php > /dev/null 2>/dev/null &';
+shell_exec($cmd);
 
 $redis->close();
 // ---
@@ -141,6 +153,12 @@ exit;
 // ---
 // ---
 // ---
+
+function validToken($token)
+{
+    $parts = explode('-', $token);
+    return count($parts) > 1;
+}
 
 function extractPayload($query)
 {

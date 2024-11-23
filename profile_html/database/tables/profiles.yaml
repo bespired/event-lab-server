@@ -10,13 +10,17 @@
         cmne:       mnemonic
         project:    base1
 
-        is_contact:      boolean
+        is_contact:    boolean
 
-        visitcount:      int
-        firstvistcode:   date-code # day of year - year  142-24
-        firstvistdate:   timestamp-null
-        lastvistcode:    date-code
-        lastvistdate:    timestamp-null
+        visitcount:    int
+
+        firstvistcode: date-code # day of year - year  142-24
+        firstvistdate: timestamp-null
+        firstdevice:   handle-null
+
+        lastvistcode:  date-code
+        lastvistdate:  timestamp-null
+        lastdevice:    handle-null
 
         created_at:    timestamp-null
         deleted_at:    timestamp-null

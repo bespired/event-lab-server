@@ -1,0 +1,31 @@
+---
+    label: Browser
+    dependancy: track_timelines
+
+    tablename: sys_browsers
+
+    columns:
+        id:          incremental
+        handle:      handle
+        hash:        name
+
+        is_bot                     : bit    # 0
+        mozilla                    : handle
+        browser                    : name   # Chrome         | Safari
+        browser_engine_version     : name   # 70.0.3538.110  |
+        browser_version            : name   # 537.36         |
+        like_gecko                 : bit
+        family                     : name   # AppleWebKit    |
+        sub_family                 : name   #
+        sub_version                : name   #
+
+        platform                   : name   # Windows        |
+        os                         : name   # Windows NT 6.1 |
+        os_variant                 : name   #
+        device                     : name   # Desktop        | Mobile
+        device_version             : name   #
+        locale                     : handle-null # zh-cn
+
+
+# per contact have some "random" tokens to identify contact when returning
+

@@ -1,5 +1,5 @@
 ---
-    label: Timelines
+    label: Timeline archive
     dependancy: track_timelines
 
     tablename: track_archives

@@ -8,7 +8,9 @@ function atuiaj() {
     var url = 'https://localhost/--/tracker/start.php?'
 
     var visitor = localStorage.getItem('eventlab-visitor')
+    if ((visitor === undefined) || (visitor === 'undefined')) visitor = null
     var session = sessionStorage.getItem('eventlab-session')
+    if ((session === undefined) || (session === 'undefined')) session = null
     var mode = ((session) ? 'session' : (visitor ? 'return' : 'first'))
 
     switch (mode) {

@@ -28,11 +28,11 @@ $redis->htStart('tokens');
 
 $atomic = $redis->topToken();
 while ($atomic) {
-    file_put_contents('tmp.log', sprintf("%s %s\n", date('Y.m.d H:i:s'), $atomic), FILE_APPEND | LOCK_EX);
+    file_put_contents('tmp.log', sprintf("%s %s\n", date('Y.m.d H:i:s'), $atomic), FILE_APPEND);
 
     // Handle the atomic token...
     // split atomic token...
-    list($token, $category, $action, $time) = explode(':', $atomic);
+    list($token, $category, $action, $time) = explode('::', $atomic);
 
     // split the token...
     $profile = $token;
@@ -42,7 +42,8 @@ while ($atomic) {
     // find the token for the profile ... etc.
     $cmne = 'T' . strtoupper(substr($category, 0, 1) . substr($action, 0, 2));
 
-    $handle              = Handle::create('time', $cmne, $time);
+    $handle = Handle::create('time', $cmne, $time);
+
     $slots['handle']     = $handle;
     $slots['service']    = 'tracker';
     $slots['project']    = substr($profile, 0, 1);

@@ -34,7 +34,7 @@ class MyDB
 
     public function close()
     {
-        if (!$this->conn) {
+        if (! $this->conn) {
             return;
         }
 
@@ -43,17 +43,23 @@ class MyDB
 
     public function insert($tableName, $slots)
     {
-        $keys   = array_keys($slots);
-        $values = array_values($slots);
 
-        $columns = '`' . join('`,`', $keys) . '`';
-        $inserts = '"' . join('","', $values) . '"';
+        foreach ($slots as $key => $value) {
+            $keys[] = "`$key`";
+
+            $quoted   = is_null($value) ? '' : sprintf('"%s"', addslashes($value));
+            $values[] = is_null($value) ? 'NULL' : (is_string($value) ? $quoted : $value);
+        }
+
+        $columns = join(', ', $keys);
+        $inserts = join(', ', $values);
 
         $sql = '';
         $sql .= sprintf("INSERT INTO `%s` (%s) \n", $tableName, $columns);
         $sql .= sprintf('VALUES (%s) ', $inserts);
 
-        file_put_contents(__DIR__ . '/../public/tmp.log', sprintf("%s %s\n", date('Y.m.d H:i:s'), $sql), FILE_APPEND | LOCK_EX);
+        file_put_contents(__DIR__ . '/../public/tmp.log',
+            sprintf("%s %s\n", date('Y.m.d H:i:s'), $sql), FILE_APPEND);
 
         $this->connect();
         $result = $this->conn->query($sql);
@@ -94,7 +100,7 @@ class MyDB
         $this->connect();
 
         $result = $this->conn->query($sql);
-        if (!$result->num_rows) {
+        if (! $result->num_rows) {
             return null;
         }
 
@@ -109,10 +115,21 @@ class MyDB
     public function first($sql)
     {
         $result = $this->select($sql);
-        if (!$result) {
+        if (! $result) {
             return null;
         }
 
         return $result[0];
     }
+
+    public function count($sql)
+    {
+        $result = $this->select($sql);
+        if (! $result) {
+            return null;
+        }
+
+        return intval(reset($result[0]));
+    }
+
 }
