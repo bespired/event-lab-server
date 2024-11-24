@@ -27,5 +27,3 @@
         locale                     : handle-null # zh-cn
 
 
-# per contact have some "random" tokens to identify contact when returning
-

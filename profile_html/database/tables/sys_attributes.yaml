@@ -8,7 +8,7 @@
         id:          incremental
         handle:      handle
         project:     base1
-        deleted_at:     timestamp-null
+        deleted_at:  timestamp-null
 
         table:       name        # was enum[ profiles/journeys/contacts/timelines
                                  #       /events/groups/tags/rights/consents/user ]
@@ -17,6 +17,7 @@
         name:        name        # contact--first-name  or tag--nice-tag
         cmne:        mnemonic
         service:     name        # if on timeline what service is this from
+        timeline:    name        # if on timeline what cateory--action
         column:      name        # attr001 or large010 etc.
         extra:       large       # data for consent or tag / maybe this should be blob?
         datatype:    name        # how sensitive is this data

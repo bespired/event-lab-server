@@ -21,7 +21,7 @@ if ($redis->isHT('landing')) {
 
 $db = new MyDB();
 
-// $redis->htStart('landing');
+$redis->htStart('landing');
 
 // Read Attributes of where table=tracker
 // so name can be compared to aggrigate--/category/-/action/-/value/
@@ -33,9 +33,12 @@ while ($visit) {
 
     // Handle the atomic token...
     // split atomic token...
+
     list($visitor, $session, $time, $json) = explode('::', $visit, 4);
 
-    $server = json_decode($json);
+    $server     = json_decode($json);
+    $contact    = null;
+    $returncode = null;
 
     $payload = [];
     extractPayload($server->queryString);
@@ -46,9 +49,16 @@ while ($visit) {
     $browser = $agent->browserAgent($server->userAgent);
     $agent->insertOnNew($db, $browser);
 
-    // $profile = findOrCreateProfileFromVisitorToken($visitor);
+    // browser is for the device update
+    $profile = findOrCreateProfileFromVisitorToken($db, $visitor, $browser);
+
     // or maybe we have a return token ...
-    $profile = $visitor;
+    if (isset($payload['elrt'])) {
+        $elrt  = $payload['elrt'];
+        $parts = explode('-', $elrt);
+        if (count($parts) === 4) {$returncode = $parts[3];}
+        list($profile, $contact) = findByReturnCode($db, $elrt, $browser, $profile);
+    }
 
     $cmne = 'TLND';
 
@@ -80,13 +90,19 @@ while ($visit) {
     $slots['attr_3'] = $browser->hash;
     $slots['attr_4'] = $browser->device;
     $slots['attr_5'] = $browser->browser;
-
-    // UTMS
+    $slots['attr_6'] = $returncode ? $returncode : null;
+    $slots['attr_7'] = $contact ? $contact : null;
 
     // Keepers
     $slots['large_1'] = $server->queryString;
 
     $db->insert('track_timelines', $slots);
+
+    // TODO: Geolocation entry
+
+    // TODO: UTMS entry
+
+    // TODO: if it is a return token, then kick the return Journeys
 
     $visit = $redis->topVisit();
 }
@@ -101,6 +117,86 @@ $db->close();
 
 exit;
 // --
+
+function findByReturnCode($db, $elrt, $browser, $profile)
+{
+    $tokenstack = $db->findToken($elrt);
+
+    if ($tokenstack) {
+        $profile = $tokenstack['profile'];
+        $contact = $tokenstack['contact'];
+        updateVisit($db, $profile, $browser);
+
+        file_put_contents('tmp.log', "Found profile on return token.\n", FILE_APPEND);
+    } else {
+        $contact = null;
+        // this is weird and could not happen ...
+        // someone pulling us a leg?
+
+    }
+
+    return [$profile, $contact];
+}
+
+function findOrCreateProfileFromVisitorToken($db, $visitor, $browser)
+{
+    $tokenstack = $db->findToken($visitor);
+
+    if ($tokenstack) {
+        $profile = $tokenstack['profile'];
+        updateVisit($db, $profile, $browser);
+
+        file_put_contents('tmp.log', "Found profile on token.\n", FILE_APPEND);
+    } else {
+
+        $profile = newVisit($db, $visitor, $browser);
+        file_put_contents('tmp.log', "Create profile and token.\n", FILE_APPEND);
+    }
+
+    return $profile;
+}
+
+function updateVisit($db, $profile, $browser)
+{
+    $db->increment('profiles', 'visitcount', $profile);
+}
+
+function newVisit($db, $visitor, $browser)
+{
+
+    $time = time();
+
+    $payload = [];
+    $profile = Handle::create('profile', 'PBYV', $time);
+
+    $payload['handle']        = $profile;
+    $payload['cmne']          = 'PBYV';
+    $payload['is_contact']    = 0;
+    $payload['project']       = substr($visitor, 0, 1);
+    $payload['visitcount']    = 1;
+    $payload['firstvistcode'] = Tools::visitCode($time);
+    $payload['firstvistdate'] = Tools::visitDate($time);
+    $payload['firstdevice']   = $browser->device;
+    $payload['lastvistcode']  = $payload['firstvistcode'];
+    $payload['lastvistdate']  = $payload['firstvistdate'];
+    $payload['lastdevice']    = $payload['firstdevice'];
+    $payload['created_at']    = Tools::visitDate($time);
+
+    $db->insert('profiles', $payload);
+
+    $payload = [];
+
+    $payload['handle']  = Handle::create('token', 'TBYV', $time);
+    $payload['profile'] = $profile;
+    $payload['contact'] = null;
+    $payload['project'] = substr($visitor, 0, 1);
+    $payload['token_1'] = $visitor;
+    $payload['pointer'] = 2;
+
+    $db->insert('track_tokens', $payload);
+
+    return $profile;
+}
 
 function extractPayload($query)
 {
@@ -130,8 +226,8 @@ function explodeHref()
 
     if (isset($payload['href'])) {
         $href        = urldecode(base64_decode($payload['href']));
-        $hasQuery    = strpos($href, ' ? ') !== false;
-        $hasFragment = strpos($href, ' #') !== false;
+        $hasQuery    = strpos($href, '?') !== false;
+        $hasFragment = strpos($href, '#') !== false;
 
         $url = $href;
 

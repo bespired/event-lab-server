@@ -1,116 +1,130 @@
 <?php
 
-Class MyDB {
+class MyDB
+{
 
-	private $servername;
-	private $username;
-	private $password;
-	private $database;
-	private $conn;
+    private $servername;
+    private $username;
+    private $password;
+    private $database;
+    private $conn;
 
-	public function __construct() {
+    public function __construct()
+    {
 
-		include_once "Dot.php";
-		$env = Dot::handle();
+        include_once "Dot.php";
+        $env = Dot::handle();
 
-		$this->servername = $env->mysqlHost;
-		$this->username = $env->mysqlRootUser;
-		$this->password = $env->mysqlRootPassword;
-		$this->database = $env->mysqlDatabase;
+        $this->servername = $env->mysqlHost;
+        $this->username   = $env->mysqlRootUser;
+        $this->password   = $env->mysqlRootPassword;
+        $this->database   = $env->mysqlDatabase;
 
-	}
+    }
 
-	public function connect() {
-		if ($this->conn) {
-			return;
-		}
+    public function connect()
+    {
+        if ($this->conn) {
+            return;
+        }
 
-		$this->conn = new mysqli($this->servername, $this->username, $this->password, $this->database);
+        $this->conn = new mysqli($this->servername, $this->username, $this->password, $this->database);
 
-		if ($this->conn->connect_error) {
-			die("Connection failed: " . $this->conn->connect_error);
-		}
-	}
+        if ($this->conn->connect_error) {
+            die("Connection failed: " . $this->conn->connect_error);
+        }
+    }
 
-	public function close() {
-		if (!$this->conn) {
-			return;
-		}
+    public function close()
+    {
+        if (! $this->conn) {
+            return;
+        }
 
-		$this->conn->close();
-	}
+        $this->conn->close();
+    }
 
-	public function insert($tableName, $slots) {
-		$keys = array_keys($slots);
-		$values = array_values($slots);
+    public function insert($tableName, $slots)
+    {
 
-		$columns = '`' . join('`,`', $keys) . '`';
-		$inserts = '"' . join('","', $values) . '"';
+        foreach ($slots as $key => $value) {
+            $keys[] = "`$key`";
 
-		$sql = "";
-		$sql .= sprintf("INSERT INTO `%s` (%s) \n", $tableName, $columns);
-		$sql .= sprintf("VALUES (%s) \n", $inserts);
+            $quoted   = is_null($value) ? '' : sprintf('"%s"', addslashes($value));
+            $value    = is_bool($value) ? ($value ? 1 : 0) : $value;
+            $values[] = is_null($value) ? 'NULL' : (is_string($value) ? $quoted : $value);
+        }
 
-		$this->connect();
-		$result = $this->conn->query($sql);
+        $columns = join(', ', $keys);
+        $inserts = join(', ', $values);
 
-		return $result;
+        $sql = '';
+        $sql .= sprintf("INSERT INTO `%s` (%s) \n", $tableName, $columns);
+        $sql .= sprintf('VALUES (%s) ', $inserts);
 
-	}
+        $this->connect();
+        $result = $this->conn->query($sql);
 
-	public function update($tableName, $slots, $whereis) {
+        return $result;
 
-		$updates = [];
-		$wheres = [];
+    }
 
-		// simple CHANGE ...
-		foreach ($slots as $key => $value) {
-			$updates[] = sprintf('`%s` = "%s"', $key, $value);
-		}
-		$update = join(', ', $updates);
+    public function update($tableName, $slots, $whereis)
+    {
 
-		// simple ANDS ...
-		foreach ($whereis as $key => $value) {
-			$wheres[] = sprintf('`%s` = "%s"', $key, $value);
-		}
-		$where = '(' . join('","', $wheres) . ')';
+        $updates = [];
+        $wheres  = [];
 
-		$sql = "";
-		$sql .= sprintf("UPDATE `%s` \n", $tableName);
-		$sql .= sprintf("SET %s \n", $update);
-		$sql .= sprintf("WHERE %s \n", $where);
+        // simple CHANGE ...
+        foreach ($slots as $key => $value) {
+            $updates[] = sprintf('`%s` = "%s"', $key, $value);
+        }
+        $update = join(', ', $updates);
 
-		$this->connect();
-		$result = $this->conn->query($sql);
+        // simple ANDS ...
+        foreach ($whereis as $key => $value) {
+            $wheres[] = sprintf('`%s` = "%s"', $key, $value);
+        }
+        $where = '(' . join('","', $wheres) . ')';
 
-		return $result;
+        $sql = "";
+        $sql .= sprintf("UPDATE `%s` \n", $tableName);
+        $sql .= sprintf("SET %s \n", $update);
+        $sql .= sprintf("WHERE %s \n", $where);
 
-	}
+        $this->connect();
+        $result = $this->conn->query($sql);
 
-	public function select($sql) {
-		$this->connect();
+        return $result;
 
-		$result = $this->conn->query($sql);
-		if (!$result->num_rows) {
-			return null;
-		}
+    }
 
-		while ($row = $result->fetch_assoc()) {
-			$low = array_change_key_case($row);
-			$rows[] = $low;
-		}
+    public function select($sql)
+    {
+        $this->connect();
 
-		return $rows;
+        $result = $this->conn->query($sql);
+        if (! $result->num_rows) {
+            return null;
+        }
 
-	}
+        while ($row = $result->fetch_assoc()) {
+            $low    = array_change_key_case($row);
+            $rows[] = $low;
+        }
 
-	public function first($sql) {
-		$result = $this->select($sql);
-		if (!$result) {
-			return null;
-		}
+        return $rows;
 
-		return $result[0];
-	}
+    }
+
+    public function first($sql)
+    {
+        $result = $this->select($sql);
+        if (! $result) {
+            return null;
+        }
+
+        return $result[0];
+    }
 
 }

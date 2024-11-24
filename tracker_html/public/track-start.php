@@ -73,7 +73,8 @@ if (isset($payload['session'])) {
             // if first and contact ...
             // then lets get a token and session for this profile...
 
-            $visitor = 'get-id-from-db';
+            $elrt    = $payload['elrt'];
+            $visitor = getIdFromElrt($elrt);
             $session = Token::createSession();
 
             $mode = 'first-contact';
@@ -153,6 +154,16 @@ exit;
 // ---
 // ---
 // ---
+
+// elrt should be in token fields...
+// the first 3 sylables should fit as token.
+
+function getIdFromElrt($elrt)
+{
+    $parts = explode('-', $elrt);
+    array_pop($parts);
+    return join('-', $parts);
+}
 
 function validToken($token)
 {

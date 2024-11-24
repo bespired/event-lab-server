@@ -1,0 +1,117 @@
+---
+    id:          (auto)
+    handle:      (auto)
+    name:        timeline--forwarded-ip
+    description: Forwarded IP on page landing
+    table:       track_timelines
+    label:       Forwarded IP
+    cmne:        TFIP
+    column:      attr_1
+    timeline:    page--visit
+    service:     tracker
+    datatype:    ip
+    valuetype:   single
+---
+    id:          (auto)
+    handle:      (auto)
+    name:        timeline--real-ip
+    description: Real IP on page landing
+    table:       track_timelines
+    label:       Real IP
+    cmne:        TRIP
+    timeline:    page--visit
+    column:      attr_2
+    service:     tracker
+    datatype:    ip
+    valuetype:   single
+---
+    id:          (auto)
+    handle:      (auto)
+    name:        timeline--browser-hash
+    description: Tracker made a hash of the browser
+    table:       track_timelines
+    label:       Browser Hash
+    cmne:        TBRH
+    timeline:    page--visit
+    column:      attr_3
+    service:     tracker
+    datatype:    hash
+    valuetype:   single
+---
+    id:          (auto)
+    handle:      (auto)
+    name:        timeline--browser-device
+    description: what device was landing on
+    table:       track_timelines
+    label:       Device
+    cmne:        TBDV
+    timeline:    page--visit
+    column:      attr_4
+    service:     tracker
+    datatype:    hash
+    valuetype:   single
+---
+    id:          (auto)
+    handle:      (auto)
+    name:        timeline--browser-name
+    description: what browser was used
+    table:       track_timelines
+    label:       Browser name
+    cmne:        TBNM
+    timeline:    page--visit
+    column:      attr_5
+    service:     tracker
+    datatype:    name
+    valuetype:   single
+---
+    id:          (auto)
+    handle:      (auto)
+    name:        timeline--return-code
+    description: what return code was seen
+    table:       track_timelines
+    label:       Return code
+    cmne:        TRTC
+    timeline:    page--visit
+    column:      attr_6
+    service:     tracker
+    datatype:    token
+    valuetype:   single
+---
+    id:          (auto)
+    handle:      (auto)
+    name:        timeline--contact
+    description: what is the contact id
+    table:       track_timelines
+    label:       Contact ID
+    cmne:        TCID
+    timeline:    page--visit
+    column:      attr_7
+    service:     tracker
+    datatype:    handle
+    valuetype:   single
+---
+    id:          (auto)
+    handle:      (auto)
+    name:        timeline--contact
+    description: what is the contact id
+    table:       track_timelines
+    label:       Contact ID
+    cmne:        TCID
+    timeline:    page--visit
+    column:      attr_7
+    service:     tracker
+    datatype:    handle
+    valuetype:   single
+---
+    id:          (auto)
+    handle:      (auto)
+    name:        timeline--posted
+    description: the posted value of the tracker
+    table:       track_timelines
+    label:       Posted data
+    cmne:        TPDT
+    timeline:    page--visit
+    column:      large_1
+    service:     tracker
+    datatype:    string
+    valuetype:   single

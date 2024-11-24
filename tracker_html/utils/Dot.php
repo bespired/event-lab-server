@@ -6,23 +6,7 @@ class Dot
     public static function handle()
     {
 
-        $locations = [
-            __DIR__ . '/../../docker.env',
-            __DIR__ . '/../docker.env',
-            __DIR__ . '/docker.env',
-        ];
-
-        $file = null;
-        foreach ($locations as $location) {
-            if (file_exists($location)) {
-                $file = file_get_contents($location);
-            }
-        }
-
-        if (! $file) {
-            echo "could not find docker.env file \n";
-            exit;
-        }
+        $file = self::readDockerFile();
 
         $env = (object) [];
 
@@ -52,6 +36,37 @@ class Dot
 
         return $env;
 
+    }
+
+    private static function readDockerFile()
+    {
+        $locations = [
+            __DIR__ . '/../../docker.env',
+            __DIR__ . '/../docker.env',
+            __DIR__ . '/docker.env',
+        ];
+
+        $file = null;
+        foreach ($locations as $location) {
+            if (file_exists($location)) {
+                $file = file_get_contents($location);
+
+                $secretfile = str_replace('docker', 'secrets', $location);
+                $secrets    = @file_get_contents($secretfile);
+
+                if ($secrets) {
+                    $file = $file . "\n" . $secrets . "\n";
+                }
+
+            }
+        }
+
+        if (! $file) {
+            echo "could not find docker.env file \n";
+            exit;
+        }
+
+        return $file;
     }
 
 }

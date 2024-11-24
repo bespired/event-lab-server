@@ -41,6 +41,46 @@ class MyDB
         $this->conn->close();
     }
 
+    public function findToken($token)
+    {
+        $sql = '';
+        $sql .= 'SELECT `handle`, `profile`, `contact`, `project`, `pointer` FROM `track_tokens` ';
+        $sql .= 'WHERE CONCAT(';
+        $sql .= '  COALESCE(`token_1`, ""), "::", COALESCE(`token_2`, ""), "::", COALESCE(`token_3`, ""), "::", ';
+        $sql .= '  COALESCE(`token_4`, ""), "::", COALESCE(`token_5`, ""), "::", COALESCE(`token_6`, ""), "::", ';
+        $sql .= '  COALESCE(`token_7`, ""), "::", COALESCE(`token_8`, ""), "::", COALESCE(`token_9`, ""), "::", ';
+        $sql .= '  COALESCE(`token_10`, ""), "::", COALESCE(`token_11`, ""), "::", COALESCE(`token_12`, ""), "::", ';
+        $sql .= '  COALESCE(`token_13`, ""), "::", COALESCE(`token_14`, ""), "::", COALESCE(`token_15`, ""), "::", ';
+        $sql .= '  COALESCE(`token_16`, ""), "::", COALESCE(`token_17`, ""), "::", COALESCE(`token_18`, ""), "::", ';
+        $sql .= '  COALESCE(`token_19`, ""), "::", COALESCE(`token_20`, ""), "::", COALESCE(`token_21`, ""), "::", ';
+        $sql .= '  COALESCE(`token_22`, ""), "::", COALESCE(`token_23`, ""), "::", COALESCE(`token_24`, ""), "::", ';
+        $sql .= '  COALESCE(`token_25`, ""), "::", COALESCE(`token_26`, ""), "::", COALESCE(`token_27`, ""), "::", ';
+        $sql .= '  COALESCE(`token_28`, ""), "::", COALESCE(`token_29`, ""), "::", COALESCE(`token_30`, "") ';
+        $sql .= ') LIKE "%' . $token . '%"';
+
+        $result = $this->select($sql);
+        if (! $result) {
+            return null;
+        }
+
+        return $result[0];
+
+    }
+
+    public function increment($tableName, $column, $where, $amount = 1)
+    {
+        $sql = sprintf('UPDATE `%s` SET `%s` = `%s` + %s WHERE `handle` = "%s"',
+            $tableName, $column, $column, $amount, $where);
+
+        file_put_contents(__DIR__ . '/../public/tmp.log',
+            sprintf("%s %s\n", date('Y.m.d H:i:s'), $sql), FILE_APPEND);
+
+        $this->connect();
+        $result = $this->conn->query($sql);
+
+        return $result;
+    }
+
     public function insert($tableName, $slots)
     {
 

@@ -2,6 +2,6 @@
 /design
 /docker/mysql/dbdata/*
 /docker/redis/appendonlydir/*
-websocket/vendor/*
 /docker/redis/dump.rdb
+websocket/vendor/*
 websocket/vendor/

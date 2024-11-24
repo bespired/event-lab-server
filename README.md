@@ -43,3 +43,9 @@ Building and seeding is done via YAML files.
 
 If you want to rerun the create you can remove the DB with    
 `> php createDB.php`   
+
+I'm not storing my real secrets in git.
+secrets are in secrets.env  Dot.php will read that file
+
+
+

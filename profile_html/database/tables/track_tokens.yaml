@@ -10,6 +10,7 @@
         profile:     handle-null
         contact:     handle-null
         project:     base1
+        pointer:     int
 
         repeats:
             amount: 30
