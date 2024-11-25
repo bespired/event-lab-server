@@ -13,10 +13,12 @@
         is_contact:    boolean
 
         visitcount:    int
+        pagecount:     int
 
         firstvistcode: date-code # day of year - year  142-24
         firstvistdate: timestamp-null
         firstdevice:   handle-null
+        firstcountry:  mnemonic
 
         lastvistcode:  date-code
         lastvistdate:  timestamp-null

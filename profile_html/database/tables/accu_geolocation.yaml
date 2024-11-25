@@ -1,0 +1,28 @@
+---
+    label: Geolocation
+    dependancy: profiles
+
+    tablename: accu_geolocation
+
+    columns:
+        id:          incremental
+        handle:      handle
+        profile:     handle
+        cmne:        mnemonic
+        project:     base1
+
+        is_changed:   bit
+        is_new:       bit
+
+        repeats:
+            amount: 8
+            columns:
+                country_code:  mnemonic
+                country_name:  name
+                state:         name
+                city:          name
+                postal:        handle-null
+                latitude:      handle-null
+                longitude:     handle-null
+                real_ip:       name36
+

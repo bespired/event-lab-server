@@ -66,7 +66,7 @@ $handle  = Handle::make(1, 'OTKN', 'tkns');
 $return  = Handle::make(1, 'TRNC', 'retc');
 $token   = str_replace('tkns', 'r32424', $handle) . '-' . explode('-', $return)[2];
 
-$payload['handle']  = $token;
+$payload['handle']  = $handle;
 $payload['profile'] = $profile;
 $payload['contact'] = $contact;
 $payload['project'] = 'a';

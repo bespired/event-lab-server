@@ -1,0 +1,27 @@
+---
+    label: UTMS Builder
+    dependancy: sys_attributes
+
+    tablename: bldr_utms
+
+    columns:
+        id:           incremental
+        handle:       handle
+        project:      base1
+
+        is_new:       bit
+
+        href:         name
+        source:       name
+        medium:       name
+        name:         name
+        campaign:     name
+        term:         name
+        content:      name
+
+        icon:         name
+
+        deleted_at:  timestamp-null
+
+# define track utms
+#

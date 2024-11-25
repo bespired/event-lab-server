@@ -39,6 +39,8 @@ function atuiaj() {
             if (j.hasOwnProperty('visitor')) {
                 localStorage.setItem('eventlab-visitor', j.visitor)
             }
+
+            // then send header stuff ... referer etc...
         })
 }
 
