@@ -7,6 +7,9 @@ RewriteRule /start  %{DOCUMENT_ROOT}/track-start.php [L]
 # http://{domain}/--/tracker/{pixel-token}/pixel.gif
 RewriteRule /pixel.gif %{DOCUMENT_ROOT}/pixel-track.php [L]
 
+RewriteRule /log  %{DOCUMENT_ROOT}/log.php [L]
+
+
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule . /index.php [L]

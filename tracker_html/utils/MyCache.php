@@ -35,6 +35,11 @@ class MyCache
         $this->redis->close();
     }
 
+    public function llen($name)
+    {
+        return $this->redis->llen($name);
+    }
+
     // -- START TRACK HELPERS
 
     public function labWrite($token, $payload)
