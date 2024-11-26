@@ -1,0 +1,21 @@
+---
+    label: Used Atrributes
+    dependancy: profiles
+
+    tablename: attr_used
+
+    columns:
+        id:           incremental
+        handle:       handle
+        project:      base1
+
+        is_new:       bit
+
+        attribute:    name
+        accu:         name
+        slot:         int
+
+        deleted_at:  timestamp-null
+
+# what attributes are used in the calculation panels
+# so we know what to collect into the result_write buffer.

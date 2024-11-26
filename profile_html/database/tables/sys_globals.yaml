@@ -15,6 +15,7 @@
         name:        name        # contact--first-name  or tag--nice-tag
         cmne:        mnemonic
         service:     name        # if on timeline what service is this from
+        timeline:    name        # attr001 or large010 etc.
         column:      name        # attr001 or large010 etc.
         extra:       large       # data for consent or tag / maybe this should be blob?
         datatype:    name        # how sensitive is this data

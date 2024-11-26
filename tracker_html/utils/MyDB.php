@@ -2,6 +2,7 @@
 
 class MyDB
 {
+    public $env;
     private $servername;
     private $username;
     private $password;
@@ -17,6 +18,7 @@ class MyDB
         $this->username   = $env->mysqlRootUser;
         $this->password   = $env->mysqlRootPassword;
         $this->database   = $env->mysqlDatabase;
+        $this->env        = $env;
     }
 
     public function connect()

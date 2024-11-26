@@ -16,6 +16,7 @@
         service:     name
         created_at:  timestamp  # action time / last visit
 
+        time:        int
         visitcode:   date-code # day of year - year  142-24
         visitdate:   timestamp-null
 
@@ -32,5 +33,5 @@
         fingerprint: name
 
         attr(8):     name
-        large(4):    large
+        large(2):    large
 

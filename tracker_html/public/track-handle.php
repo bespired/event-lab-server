@@ -60,9 +60,101 @@ while ($visit) {
         list($profile, $contact) = findByReturnCode($db, $elrt, $browser, $profile);
     }
 
-    $cmne = 'TLND';
+    trackLanding();
 
+    // TODO: UTMS entry
+
+    // TODO: if it is a return token, then kick the return Journeys
+
+    $visit = $redis->topVisit();
+}
+
+// TODO: if log gets too long trunk it.
+// $logsToKeep = file_get_contents('tmp . log', null, null, -125000, 125000);
+// file_put_contents('tmp . log', $logsToKeep);
+
+$redis->htEnd('landing');
+$redis->close();
+$db->close();
+
+exit;
+// --''
+
+function geoData()
+{
+    global $db, $server;
+
+    $ip = $server->forwardedFor;
+    if ($ip === '192.168.65.1') {
+        $ip = '77.161.128.35';
+    }
+
+    // db has dotenv for convenience
+
+    $geotoken = $db->env->geolocationDb;
+    $url      = "https://geolocation-db.com/json/$geotoken/$ip";
+
+    $geojson = file_get_contents($url);
+    $geo     = json_decode($geojson);
+
+    return $geo;
+}
+
+// function geoLanding()
+// {
+//     global $db, $time, $geodata, $profile, $session, $visitor, $payload, $server;
+
+//     $cmne   = 'GLND';
+//     $handle = Handle::create('time', $cmne, $time);
+
+//     $slots = [];
+
+//     $slots['handle']  = $handle;
+//     $slots['service'] = 'tracker';
+//     $slots['project'] = substr($visitor, 0, 1);
+
+//     $slots['profile']    = $profile;
+//     $slots['session']    = $session;
+//     $slots['created_at'] = date('Y-m-d H:i:s');
+//     $slots['cmne']       = $cmne;
+//     $slots['time']       = $time;
+//     $slots['visitcode']  = Tools::visitCode($time);
+//     $slots['visitdate']  = Tools::visitDate($time);
+
+//     $slots['category'] = 'page';
+//     $slots['action']   = 'geo';
+//     $slots['value']    = $visitor;
+
+//     $slots['url']      = $payload['url'];
+//     $slots['domain']   = $payload['domain'];
+//     $slots['path']     = $payload['path'];
+//     $slots['query']    = $payload['query'];
+//     $slots['fragment'] = $payload['fragment'];
+
+//     $slots['attr_1'] = $server->forwardedFor;
+//     $slots['attr_2'] = $geodata->country_code;
+//     $slots['attr_3'] = $geodata->country_name;
+//     $slots['attr_4'] = $geodata->state;
+//     $slots['attr_5'] = $geodata->city;
+//     $slots['attr_6'] = $geodata->postal;
+//     $slots['attr_7'] = $geodata->latitude;
+//     $slots['attr_8'] = $geodata->longitude;
+
+//     // Keepers
+//     $slots['large_1'] = json_encode($geodata);
+
+//     $db->insert('track_timelines', $slots);
+// }
+
+function trackLanding()
+{
+    global $db, $time, $profile, $session, $visitor,
+    $payload, $server, $browser, $contact;
+
+    $cmne   = 'TLND';
     $handle = Handle::create('time', $cmne, $time);
+
+    $slots = [];
 
     $slots['handle']  = $handle;
     $slots['service'] = 'tracker';
@@ -72,6 +164,7 @@ while ($visit) {
     $slots['session']    = $session;
     $slots['created_at'] = date('Y-m-d H:i:s');
     $slots['cmne']       = $cmne;
+    $slots['time']       = $time;
     $slots['visitcode']  = Tools::visitCode($time);
     $slots['visitdate']  = Tools::visitDate($time);
 
@@ -90,33 +183,15 @@ while ($visit) {
     $slots['attr_3'] = $browser->hash;
     $slots['attr_4'] = $browser->device;
     $slots['attr_5'] = $browser->browser;
-    $slots['attr_6'] = $returncode ? $returncode : null;
-    $slots['attr_7'] = $contact ? $contact : null;
+    $slots['attr_6'] = isset($returncode) ? $returncode : null;
+    $slots['attr_7'] = isset($contact) ? $contact : null;
 
     // Keepers
     $slots['large_1'] = $server->queryString;
 
     $db->insert('track_timelines', $slots);
 
-    // TODO: Geolocation entry
-
-    // TODO: UTMS entry
-
-    // TODO: if it is a return token, then kick the return Journeys
-
-    $visit = $redis->topVisit();
 }
-
-// TODO: if log gets too long trunk it.
-// $logsToKeep = file_get_contents('tmp . log', null, null, -125000, 125000);
-// file_put_contents('tmp . log', $logsToKeep);
-
-$redis->htEnd('landing');
-$redis->close();
-$db->close();
-
-exit;
-// --
 
 function findByReturnCode($db, $elrt, $browser, $profile)
 {
@@ -150,6 +225,7 @@ function findOrCreateProfileFromVisitorToken($db, $visitor, $browser)
     } else {
 
         $profile = newVisit($db, $visitor, $browser);
+
         file_put_contents('tmp.log', "Create profile and token.\n", FILE_APPEND);
     }
 
@@ -163,6 +239,9 @@ function updateVisit($db, $profile, $browser)
 
 function newVisit($db, $visitor, $browser)
 {
+
+    // ---
+    // ---
 
     $time = time();
 

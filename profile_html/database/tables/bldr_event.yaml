@@ -1,0 +1,23 @@
+---
+    label: Track event
+    dependancy: sys_attributes
+
+    tablename: bldr_event
+
+    columns:
+        id:           incremental
+        handle:       handle
+        project:      base1
+
+        is_new:       bit
+
+        href:         name
+        category:     name
+        action:       name
+        value:        name
+        icon:         name
+
+        deleted_at:  timestamp-null
+
+# define track events
+# tbd how to do this
