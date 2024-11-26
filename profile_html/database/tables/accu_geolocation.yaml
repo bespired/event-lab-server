@@ -15,7 +15,7 @@
         is_new:       bit
 
         repeats:
-            amount: 8
+            amount: 5
             columns:
                 country_code:  mnemonic
                 country_name:  name

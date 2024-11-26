@@ -56,7 +56,9 @@ while ($visit) {
     if (isset($payload['elrt'])) {
         $elrt  = $payload['elrt'];
         $parts = explode('-', $elrt);
-        if (count($parts) === 4) {$returncode = $parts[3];}
+        if (count($parts) === 4) {
+            $returncode = $parts[3];
+        }
         list($profile, $contact) = findByReturnCode($db, $elrt, $browser, $profile);
     }
 
@@ -65,6 +67,8 @@ while ($visit) {
     // TODO: UTMS entry
 
     // TODO: if it is a return token, then kick the return Journeys
+
+    $redis->tellChannel11('yet another visitor.');
 
     $visit = $redis->topVisit();
 }
@@ -190,7 +194,6 @@ function trackLanding()
     $slots['large_1'] = $server->queryString;
 
     $db->insert('track_timelines', $slots);
-
 }
 
 function findByReturnCode($db, $elrt, $browser, $profile)
@@ -207,7 +210,6 @@ function findByReturnCode($db, $elrt, $browser, $profile)
         $contact = null;
         // this is weird and could not happen ...
         // someone pulling us a leg?
-
     }
 
     return [$profile, $contact];
@@ -223,7 +225,6 @@ function findOrCreateProfileFromVisitorToken($db, $visitor, $browser)
 
         file_put_contents('tmp.log', "Found profile on token.\n", FILE_APPEND);
     } else {
-
         $profile = newVisit($db, $visitor, $browser);
 
         file_put_contents('tmp.log', "Create profile and token.\n", FILE_APPEND);
@@ -239,7 +240,6 @@ function updateVisit($db, $profile, $browser)
 
 function newVisit($db, $visitor, $browser)
 {
-
     // ---
     // ---
 
@@ -288,10 +288,8 @@ function extractPayload($query)
             $payload[$key]     = $value;
         } else {
             $payload[$valuepair] = true;
-
         }
     }
-
 }
 
 function explodeHref()
@@ -310,12 +308,12 @@ function explodeHref()
 
         $url = $href;
 
-        if ($hasQuery && ! $hasFragment) {
+        if ($hasQuery && !$hasFragment) {
             list($url, $query) = explode('?', $href, 2);
             extractPayload($query);
             $payload['query'] = $query;
         }
-        if (! $hasQuery && $hasFragment) {
+        if (!$hasQuery && $hasFragment) {
             list($url, $fragment) = explode('#', $href, 2);
             $payload['fragment']  = $fragment;
         }
@@ -333,6 +331,5 @@ function explodeHref()
         $payload['url']    = $url;
         $payload['domain'] = explode(':', $domain)[0];
         $payload['path']   = $path;
-
     }
 }

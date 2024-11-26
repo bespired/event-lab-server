@@ -10,7 +10,7 @@ class MyCache
         include_once 'Dot.php';
         $env = Dot::handle();
 
-        if (! $env->redisHost) {
+        if (!$env->redisHost) {
             echo "missing redisHost in env\n";
             exit;
         }
@@ -18,6 +18,16 @@ class MyCache
         $this->redis = new Redis();
         $this->redis->connect($env->redisHost, $env->redisPort);
         $this->redis->rawCommand('auth', 'default', $env->redisRootPassword);
+    }
+
+    public function subscribe($callback)
+    {
+        return $this->redis->subscribe(['channel11'], $callback);
+    }
+
+    public function tellChannel11($message)
+    {
+        $this->redis->publish('channel11', $message);
     }
 
     public function close()
@@ -97,7 +107,6 @@ class MyCache
     {
         return $this->redis->exists('handling-' . $category);
     }
-
 }
 
 // echo 'AUTH redis\nping' | redis-cli
