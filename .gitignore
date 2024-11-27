@@ -5,3 +5,4 @@
 /docker/redis/dump.rdb
 websocket/vendor/*
 websocket/vendor/
+tracker_html/public/tmp.log
