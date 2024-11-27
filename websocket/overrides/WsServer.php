@@ -1,5 +1,6 @@
 <?php
 namespace Ratchet\WebSocket;
+
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
 use GuzzleHttp\Psr7\Message;
@@ -24,245 +25,245 @@ use React\EventLoop\LoopInterface;
  * @link http://ca.php.net/manual/en/ref.http.php
  * @link http://dev.w3.org/html5/websockets/
  */
-class WsServer implements HttpServerInterface {
-	use CloseResponseTrait;
+class WsServer implements HttpServerInterface
+{
+    use CloseResponseTrait;
 
-	/**
-	 * Decorated component
-	 * @var \Ratchet\ComponentInterface
-	 */
-	private $delegate;
+    /**
+     * Decorated component
+     * @var \Ratchet\ComponentInterface
+     */
+    private $delegate;
 
-	/**
-	 * @var \SplObjectStorage
-	 */
-	protected $connections;
+    /**
+     * @var \SplObjectStorage
+     */
+    protected $connections;
 
-	/**
-	 * @var \Ratchet\RFC6455\Messaging\CloseFrameChecker
-	 */
-	private $closeFrameChecker;
+    /**
+     * @var \Ratchet\RFC6455\Messaging\CloseFrameChecker
+     */
+    private $closeFrameChecker;
 
-	/**
-	 * @var \Ratchet\RFC6455\Handshake\ServerNegotiator
-	 */
-	private $handshakeNegotiator;
+    /**
+     * @var \Ratchet\RFC6455\Handshake\ServerNegotiator
+     */
+    private $handshakeNegotiator;
 
-	/**
-	 * @var \Closure
-	 */
-	private $ueFlowFactory;
+    /**
+     * @var \Closure
+     */
+    private $ueFlowFactory;
 
-	/**
-	 * @var \Closure
-	 */
-	private $pongReceiver;
+    /**
+     * @var \Closure
+     */
+    private $pongReceiver;
 
-	/**
-	 * @var \Closure
-	 */
-	private $msgCb;
+    /**
+     * @var \Closure
+     */
+    private $msgCb;
 
-	private $secrets = [];
+    private $secrets = [];
 
-	/**
-	 * @param \Ratchet\WebSocket\MessageComponentInterface|\Ratchet\MessageComponentInterface $component Your application to run with WebSockets
-	 * @note If you want to enable sub-protocols have your component implement WsServerInterface as well
-	 */
-	public function __construct(ComponentInterface $component, array $payload = []) {
-		if ($component instanceof MessageComponentInterface) {
-			$this->msgCb = function (ConnectionInterface $conn, MessageInterface $msg) {
-				$this->delegate->onMessage($conn, $msg);
-			};
-		} elseif ($component instanceof DataComponentInterface) {
-			$this->msgCb = function (ConnectionInterface $conn, MessageInterface $msg) {
-				$this->delegate->onMessage($conn, $msg->getPayload());
-			};
-		} else {
-			throw new \UnexpectedValueException('Expected instance of \Ratchet\WebSocket\MessageComponentInterface or \Ratchet\MessageComponentInterface');
-		}
+    /**
+     * @param \Ratchet\WebSocket\MessageComponentInterface|\Ratchet\MessageComponentInterface $component Your application to run with WebSockets
+     * @note If you want to enable sub-protocols have your component implement WsServerInterface as well
+     */
+    public function __construct(ComponentInterface $component, array $payload = [])
+    {
+        if ($component instanceof MessageComponentInterface) {
+            $this->msgCb = function (ConnectionInterface $conn, MessageInterface $msg) {
+                $this->delegate->onMessage($conn, $msg);
+            };
+        } elseif ($component instanceof DataComponentInterface) {
+            $this->msgCb = function (ConnectionInterface $conn, MessageInterface $msg) {
+                $this->delegate->onMessage($conn, $msg->getPayload());
+            };
+        } else {
+            throw new \UnexpectedValueException('Expected instance of \Ratchet\WebSocket\MessageComponentInterface or \Ratchet\MessageComponentInterface');
+        }
 
-		if (bin2hex('✓') !== 'e29c93') {
-			throw new \DomainException('Bad encoding, unicode character ✓ did not match expected value. Ensure charset UTF-8 and check ini val mbstring.func_autoload');
-		}
+        if (bin2hex('✓') !== 'e29c93') {
+            throw new \DomainException('Bad encoding, unicode character ✓ did not match expected value. Ensure charset UTF-8 and check ini val mbstring.func_autoload');
+        }
 
-		$this->delegate = $component;
-		$this->connections = new \SplObjectStorage;
+        $this->delegate    = $component;
+        $this->connections = new \SplObjectStorage;
 
-		$this->closeFrameChecker = new CloseFrameChecker;
-		$this->handshakeNegotiator = new ServerNegotiator(new RequestVerifier);
-		$this->handshakeNegotiator->setStrictSubProtocolCheck(true);
+        $this->closeFrameChecker   = new CloseFrameChecker;
+        $this->handshakeNegotiator = new ServerNegotiator(new RequestVerifier);
+        $this->handshakeNegotiator->setStrictSubProtocolCheck(true);
 
-		if ($component instanceof WsServerInterface) {
-			$this->handshakeNegotiator->setSupportedSubProtocols($component->getSubProtocols());
-		}
+        if ($component instanceof WsServerInterface) {
+            $this->handshakeNegotiator->setSupportedSubProtocols($component->getSubProtocols());
+        }
 
-		$this->pongReceiver = function () {};
+        $this->pongReceiver = function () {};
 
-		$reusableUnderflowException = new \UnderflowException;
-		$this->ueFlowFactory = function () use ($reusableUnderflowException) {
-			return $reusableUnderflowException;
-		};
+        $reusableUnderflowException = new \UnderflowException;
+        $this->ueFlowFactory        = function () use ($reusableUnderflowException) {
+            return $reusableUnderflowException;
+        };
 
-	}
+    }
 
-	/**
-	 * {@inheritdoc}
-	 */
-	public function onOpen(ConnectionInterface $conn, RequestInterface $request = null) {
-		if (null === $request) {
-			throw new \UnexpectedValueException('$request can not be null');
-		}
+    /**
+     * {@inheritdoc}
+     */
+    public function onOpen(ConnectionInterface $conn, RequestInterface $request = null)
+    {
+        if (null === $request) {
+            throw new \UnexpectedValueException('$request can not be null');
+        }
 
-		$conn->httpRequest = $request;
+        $conn->httpRequest = $request;
 
-		$conn->WebSocket = new \StdClass;
-		$conn->WebSocket->closing = false;
+        $conn->WebSocket          = new \StdClass;
+        $conn->WebSocket->closing = false;
 
-		$token = $request->getUri()->getPath();
+        $token = $request->getUri()->getPath();
+        $token = str_replace('/', '', $token);
 
-		if (!$token) {
-			return $conn->close();
-		}
+        if (! $token) {
+            echo "No token\n";
+            return $conn->close();
+        }
 
-		$token = substr($token, 1);
+        $token = str_replace('/', '', $token);
 
-		if (!$this->validToken($token)) {
-			return $conn->close();
-		}
+        if (! $this->validToken($token)) {
+            echo "Wrong token\n";
+            return $conn->close();
+        }
 
-		// print_r($token);
+        $response = $this->handshakeNegotiator
+            ->handshake($request)->withHeader('X-Powered-By', \Ratchet\VERSION);
 
-		// $key = '-*!-Goat-0*-';
-		// $decoded = JWT::decode($token, new Key($key, 'HS256'));
-		// print_r($decoded);
+        $conn->send(Message::toString($response));
 
-		// if (!in_array($token, $this->secrets)) {
-		// 	// is it a valid one?
-		// 	$key = '-*!-Goat-0*-';
-		// 	$decoded = JWT::decode($token, new Key($key, 'HS256'));
-		// 	print_r($decoded);
-		// }
+        if (101 !== $response->getStatusCode()) {
+            return $conn->close();
+        }
 
-		$response = $this->handshakeNegotiator
-			->handshake($request)->withHeader('X-Powered-By', \Ratchet\VERSION);
+        $wsConn = new WsConnection($conn);
 
-		$conn->send(Message::toString($response));
+        $streamer = new MessageBuffer(
+            $this->closeFrameChecker,
+            function (MessageInterface $msg) use ($wsConn) {
+                $cb = $this->msgCb;
+                $cb($wsConn, $msg);
+            },
+            function (FrameInterface $frame) use ($wsConn) {
+                $this->onControlFrame($frame, $wsConn);
+            },
+            true,
+            $this->ueFlowFactory
+        );
 
-		if (101 !== $response->getStatusCode()) {
-			return $conn->close();
-		}
+        $this->connections->attach($conn, new ConnContext($wsConn, $streamer));
 
-		$wsConn = new WsConnection($conn);
+        return $this->delegate->onOpen($wsConn);
+    }
 
-		$streamer = new MessageBuffer(
-			$this->closeFrameChecker,
-			function (MessageInterface $msg) use ($wsConn) {
-				$cb = $this->msgCb;
-				$cb($wsConn, $msg);
-			},
-			function (FrameInterface $frame) use ($wsConn) {
-				$this->onControlFrame($frame, $wsConn);
-			},
-			true,
-			$this->ueFlowFactory
-		);
+    private function validToken($token)
+    {
+        $key = '-*!-Goat-0*-';
 
-		$this->connections->attach($conn, new ConnContext($wsConn, $streamer));
+        try {
+            $decoded = JWT::decode($token, new Key($key, 'HS256'));
+        } catch (Exception $e) {
+            $decoded = null;
+        }
 
-		return $this->delegate->onOpen($wsConn);
-	}
+        return $decoded !== null;
+    }
 
-	private function validToken($token) {
-		$key = '-*!-Goat-0*-';
+    /**
+     * {@inheritdoc}
+     */
+    public function onMessage(ConnectionInterface $from, $msg)
+    {
+        if ($from->WebSocket->closing) {
+            return;
+        }
 
-		try {
-			$decoded = JWT::decode($token, new Key($key, 'HS256'));
-		} catch (Exception $e) {
-			$decoded = null;
-		}
+        $this->connections[$from]->buffer->onData($msg);
+    }
 
-		return $decoded !== null;
-	}
+    /**
+     * {@inheritdoc}
+     */
+    public function onClose(ConnectionInterface $conn)
+    {
+        if ($this->connections->contains($conn)) {
+            $context = $this->connections[$conn];
+            $this->connections->detach($conn);
 
-	/**
-	 * {@inheritdoc}
-	 */
-	public function onMessage(ConnectionInterface $from, $msg) {
-		if ($from->WebSocket->closing) {
-			return;
-		}
+            $this->delegate->onClose($context->connection);
+        }
+    }
 
-		$this->connections[$from]->buffer->onData($msg);
-	}
+    /**
+     * {@inheritdoc}
+     */
+    public function onError(ConnectionInterface $conn, \Exception $e)
+    {
+        if ($this->connections->contains($conn)) {
+            $this->delegate->onError($this->connections[$conn]->connection, $e);
+        } else {
+            $conn->close();
+        }
+    }
 
-	/**
-	 * {@inheritdoc}
-	 */
-	public function onClose(ConnectionInterface $conn) {
-		if ($this->connections->contains($conn)) {
-			$context = $this->connections[$conn];
-			$this->connections->detach($conn);
+    public function onControlFrame(FrameInterface $frame, WsConnection $conn)
+    {
+        switch ($frame->getOpCode()) {
+            case Frame::OP_CLOSE:
+                $conn->close($frame);
+                break;
+            case Frame::OP_PING:
+                $conn->send(new Frame($frame->getPayload(), true, Frame::OP_PONG));
+                break;
+            case Frame::OP_PONG:
+                $pongReceiver = $this->pongReceiver;
+                $pongReceiver($frame, $conn);
+                break;
+        }
+    }
 
-			$this->delegate->onClose($context->connection);
-		}
-	}
+    public function setStrictSubProtocolCheck($enable)
+    {
+        $this->handshakeNegotiator->setStrictSubProtocolCheck($enable);
+    }
 
-	/**
-	 * {@inheritdoc}
-	 */
-	public function onError(ConnectionInterface $conn, \Exception $e) {
-		if ($this->connections->contains($conn)) {
-			$this->delegate->onError($this->connections[$conn]->connection, $e);
-		} else {
-			$conn->close();
-		}
-	}
+    public function enableKeepAlive(LoopInterface $loop, $interval = 30)
+    {
+        $lastPing          = new Frame(uniqid(), true, Frame::OP_PING);
+        $pingedConnections = new \SplObjectStorage;
+        $splClearer        = new \SplObjectStorage;
 
-	public function onControlFrame(FrameInterface $frame, WsConnection $conn) {
-		switch ($frame->getOpCode()) {
-		case Frame::OP_CLOSE:
-			$conn->close($frame);
-			break;
-		case Frame::OP_PING:
-			$conn->send(new Frame($frame->getPayload(), true, Frame::OP_PONG));
-			break;
-		case Frame::OP_PONG:
-			$pongReceiver = $this->pongReceiver;
-			$pongReceiver($frame, $conn);
-			break;
-		}
-	}
+        $this->pongReceiver = function (FrameInterface $frame, $wsConn) use ($pingedConnections, &$lastPing) {
+            if ($frame->getPayload() === $lastPing->getPayload()) {
+                $pingedConnections->detach($wsConn);
+            }
+        };
 
-	public function setStrictSubProtocolCheck($enable) {
-		$this->handshakeNegotiator->setStrictSubProtocolCheck($enable);
-	}
+        $loop->addPeriodicTimer((int) $interval, function () use ($pingedConnections, &$lastPing, $splClearer) {
+            foreach ($pingedConnections as $wsConn) {
+                $wsConn->close();
+            }
+            $pingedConnections->removeAllExcept($splClearer);
 
-	public function enableKeepAlive(LoopInterface $loop, $interval = 30) {
-		$lastPing = new Frame(uniqid(), true, Frame::OP_PING);
-		$pingedConnections = new \SplObjectStorage;
-		$splClearer = new \SplObjectStorage;
+            $lastPing = new Frame(uniqid(), true, Frame::OP_PING);
 
-		$this->pongReceiver = function (FrameInterface $frame, $wsConn) use ($pingedConnections, &$lastPing) {
-			if ($frame->getPayload() === $lastPing->getPayload()) {
-				$pingedConnections->detach($wsConn);
-			}
-		};
+            foreach ($this->connections as $key => $conn) {
+                $wsConn = $this->connections[$conn]->connection;
 
-		$loop->addPeriodicTimer((int) $interval, function () use ($pingedConnections, &$lastPing, $splClearer) {
-			foreach ($pingedConnections as $wsConn) {
-				$wsConn->close();
-			}
-			$pingedConnections->removeAllExcept($splClearer);
-
-			$lastPing = new Frame(uniqid(), true, Frame::OP_PING);
-
-			foreach ($this->connections as $key => $conn) {
-				$wsConn = $this->connections[$conn]->connection;
-
-				$wsConn->send($lastPing);
-				$pingedConnections->attach($wsConn);
-			}
-		});
-	}
+                $wsConn->send($lastPing);
+                $pingedConnections->attach($wsConn);
+            }
+        });
+    }
 }

@@ -68,7 +68,9 @@ while ($visit) {
 
     // TODO: if it is a return token, then kick the return Journeys
 
-    $redis->tellChannel11('yet another visitor.');
+    // Every visitor on the websocket might be too busy.
+    // (new Socket())->send(json_encode(['visitor' => $visitor, 'time' => time()]));
+    // $redis->tellChannel11('yet another visitor.');
 
     $visit = $redis->topVisit();
 }
@@ -308,12 +310,12 @@ function explodeHref()
 
         $url = $href;
 
-        if ($hasQuery && !$hasFragment) {
+        if ($hasQuery && ! $hasFragment) {
             list($url, $query) = explode('?', $href, 2);
             extractPayload($query);
             $payload['query'] = $query;
         }
-        if (!$hasQuery && $hasFragment) {
+        if (! $hasQuery && $hasFragment) {
             list($url, $fragment) = explode('#', $href, 2);
             $payload['fragment']  = $fragment;
         }
