@@ -85,9 +85,9 @@ class MyCache
 
     // -- LANDING HELPERS
 
-    public function storeVisit($visitor, $session, $data)
+    public function storeVisit($visitor, $session, $mode, $data)
     {
-        $value = sprintf('%s::%s::%s::%s', $visitor, $session, time(), $data);
+        $value = sprintf('%s::%s::%s::%s::%s', $visitor, $session, time(), $mode, $data);
         $this->redis->rpush('pop-visits', $value);
     }
 

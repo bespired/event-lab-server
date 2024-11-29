@@ -90,6 +90,8 @@ if (isset($payload['session'])) {
 
         if ((! $session) || (! validToken($session))) {
             $session = Token::createSession();
+            // new session on returning profile
+            // update visitcount on profile.
         }
 
         if (! isset($payload['elrt'])) {
@@ -108,11 +110,6 @@ if (isset($payload['session'])) {
     }
 }
 
-// file_put_contents('tmp.log',
-//     sprintf("%s %s %s %s %s \n",
-//         date('Y.m.d H:i:s'), $visitor, $session, $mode, json_encode($_SERVER)),
-//     FILE_APPEND | LOCK_EX);
-
 // store session token
 $redis->labWrite($visitor, $session);
 
@@ -128,7 +125,7 @@ foreach ($items as $key => $itemname) {
     $server[$key] = isset($_SERVER[$itemname]) ? $_SERVER[$itemname] : null;
 }
 
-$redis->storeVisit($visitor, $session, json_encode($server));
+$redis->storeVisit($visitor, $session, $mode, json_encode($server));
 $cmd = 'php track-handle.php > /dev/null 2>/dev/null &';
 shell_exec($cmd);
 

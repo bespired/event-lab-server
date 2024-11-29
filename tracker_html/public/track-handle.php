@@ -35,7 +35,7 @@ while ($visit) {
     // Handle the atomic token...
     // split atomic token...
 
-    list($visitor, $session, $time, $json) = explode('::', $visit, 4);
+    list($visitor, $session, $time, $mode, $json) = explode('::', $visit, 5);
 
     $server     = json_decode($json);
     $contact    = null;
@@ -52,6 +52,10 @@ while ($visit) {
 
     // browser is for the device update
     $profile = findOrCreateProfileFromVisitorToken($db, $visitor, $browser);
+
+    if (str_starts_with($mode, 'return')) {
+        $db->increment('profiles', 'visitcount', $profile);
+    }
 
     // or maybe we have a return token ...
     if (isset($payload['elrt'])) {
@@ -144,7 +148,7 @@ function findByReturnCode($db, $elrt, $browser, $profile)
     if ($tokenstack) {
         $profile = $tokenstack['profile'];
         $contact = $tokenstack['contact'];
-        updateVisit($db, $profile, $browser);
+        updateVisit($db, $profile);
 
         $redis->storeLog("Found profile on return token.");
         // file_put_contents('tmp.log', "Found profile on return token.\n", FILE_APPEND);
@@ -184,7 +188,7 @@ function updateVisit($db, $profile)
 {
     global $time;
 
-    $db->increment('profiles', 'visitcount', $profile);
+    $db->increment('profiles', 'pagecount', $profile);
 
     $columns = [];
 
@@ -210,6 +214,7 @@ function newVisit($db, $visitor, $browser)
     $payload['is_contact']    = 0;
     $payload['project']       = substr($visitor, 0, 1);
     $payload['visitcount']    = 1;
+    $payload['pagecount']     = 1;
     $payload['firstvistcode'] = Tools::visitCode($time);
     $payload['firstvistdate'] = Tools::visitDate($time);
     $payload['firstdevice']   = $browser->device;
