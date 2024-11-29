@@ -28,7 +28,8 @@ $redis->htStart('tokens');
 
 $atomic = $redis->topToken();
 while ($atomic) {
-    file_put_contents('tmp.log', sprintf("%s %s\n", date('Y.m.d H:i:s'), $atomic), FILE_APPEND);
+    // file_put_contents('tmp.log', sprintf("%s %s\n", date('Y.m.d H:i:s'), $atomic), FILE_APPEND);
+    $redis->storeLog($atomic);
 
     // Handle the atomic token...
     // split atomic token...
@@ -71,10 +72,6 @@ while ($atomic) {
 
     $atomic = $redis->topToken();
 }
-
-// if log gets too long trunk it.
-// $logsToKeep = file_get_contents('tmp.log', null, null, -125000, 125000);
-// file_put_contents('tmp.log', $logsToKeep);
 
 $redis->htEnd('tokens');
 $redis->close();

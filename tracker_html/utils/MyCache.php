@@ -10,7 +10,7 @@ class MyCache
         include_once 'Dot.php';
         $env = Dot::handle();
 
-        if (!$env->redisHost) {
+        if (! $env->redisHost) {
             echo "missing redisHost in env\n";
             exit;
         }
@@ -75,12 +75,12 @@ class MyCache
     public function storeToken($token, $category, $action)
     {
         $value = sprintf('%s::%s::%s::%s', $token, $category, $action, time());
-        $this->redis->rpush('tokens', $value);
+        $this->redis->rpush('pop-tokens', $value);
     }
 
     public function topToken()
     {
-        return $this->redis->rpop('tokens');
+        return $this->redis->rpop('pop-tokens');
     }
 
     // -- LANDING HELPERS
@@ -88,12 +88,34 @@ class MyCache
     public function storeVisit($visitor, $session, $data)
     {
         $value = sprintf('%s::%s::%s::%s', $visitor, $session, time(), $data);
-        $this->redis->rpush('visits', $value);
+        $this->redis->rpush('pop-visits', $value);
     }
 
     public function topVisit()
     {
-        return $this->redis->rpop('visits');
+        return $this->redis->rpop('pop-visits');
+    }
+
+    // -- GEO HELPERS
+
+    public function storeGeo($profile, $realip)
+    {
+        $value = sprintf('%s||%s||%s', $profile, $realip, time());
+        $this->redis->rpush('pop-geos', $value);
+    }
+
+    public function topGeo()
+    {
+        return $this->redis->rpop('pop-geos');
+    }
+
+    // -- LOG HELPERS
+
+    public function storeLog($message)
+    {
+        $date  = date("Y-m-d H:i:s");
+        $value = sprintf('%s: %s', $date, $message);
+        $this->redis->rpush('pop-logs', $value);
     }
 
     // -- HANDLING HELPERS

@@ -69,13 +69,38 @@ class MyDB
 
     }
 
+    public function findGeoLocation($realip, $profile)
+    {
+
+        $project = substr($profile, 0, 1);
+
+        $sql = '';
+        $sql .= 'SELECT `handle`, `profile` FROM `accu_geolocation` ';
+        $sql .= 'WHERE `project` = "' . $project . '" ';
+        $sql .= 'AND CONCAT(';
+        $sql .= '  COALESCE(`real_ip_1`, ""), "||", ';
+        $sql .= '  COALESCE(`real_ip_2`, ""), "||", ';
+        $sql .= '  COALESCE(`real_ip_3`, ""), "||", ';
+        $sql .= '  COALESCE(`real_ip_4`, ""), "||", ';
+        $sql .= '  COALESCE(`real_ip_5`, ""), "||" ';
+        $sql .= ') LIKE "%' . $realip . '%"';
+
+        $result = $this->select($sql);
+        if (! $result) {
+            return null;
+        }
+
+        return $result[0];
+
+    }
+
     public function increment($tableName, $column, $where, $amount = 1)
     {
         $sql = sprintf('UPDATE `%s` SET `%s` = `%s` + %s WHERE `handle` = "%s"',
             $tableName, $column, $column, $amount, $where);
 
-        file_put_contents(__DIR__ . '/../public/tmp.log',
-            sprintf("%s %s\n", date('Y.m.d H:i:s'), $sql), FILE_APPEND);
+        // file_put_contents(__DIR__ . '/../public/tmp.log',
+        // sprintf("%s %s\n", date('Y.m.d H:i:s'), $sql), FILE_APPEND);
 
         $this->connect();
         $result = $this->conn->query($sql);
@@ -100,8 +125,8 @@ class MyDB
         $sql .= sprintf("INSERT INTO `%s` (%s) \n", $tableName, $columns);
         $sql .= sprintf('VALUES (%s) ', $inserts);
 
-        file_put_contents(__DIR__ . '/../public/tmp.log',
-            sprintf("%s %s\n", date('Y.m.d H:i:s'), $sql), FILE_APPEND);
+        // file_put_contents(__DIR__ . '/../public/tmp.log',
+        // sprintf("%s %s\n", date('Y.m.d H:i:s'), $sql), FILE_APPEND);
 
         $this->connect();
         $result = $this->conn->query($sql);

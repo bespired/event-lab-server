@@ -29,7 +29,8 @@ $redis->htStart('landing');
 
 $visit = $redis->topVisit();
 while ($visit) {
-    file_put_contents('tmp.log', sprintf("%s %s\n", date('Y.m.d H:i:s'), $visit), FILE_APPEND);
+    // file_put_contents('tmp.log', sprintf("%s %s\n", date('Y.m.d H:i:s'), $visit), FILE_APPEND);
+    $redis->storeLog($visit);
 
     // Handle the atomic token...
     // split atomic token...
@@ -72,85 +73,21 @@ while ($visit) {
     // (new Socket())->send(json_encode(['visitor' => $visitor, 'time' => time()]));
     // $redis->tellChannel11('yet another visitor.');
 
+    $redis->storeGeo($profile, $server->forwardedFor);
+    $cmd = 'php track-geo.php > /dev/null 2>/dev/null &';
+    shell_exec($cmd);
+
     $visit = $redis->topVisit();
 }
-
-// TODO: if log gets too long trunk it.
-// $logsToKeep = file_get_contents('tmp . log', null, null, -125000, 125000);
-// file_put_contents('tmp . log', $logsToKeep);
 
 $redis->htEnd('landing');
 $redis->close();
 $db->close();
 
 exit;
-// --''
-
-function geoData()
-{
-    global $db, $server;
-
-    $ip = $server->forwardedFor;
-    if ($ip === '192.168.65.1') {
-        $ip = '77.161.128.35';
-    }
-
-    // db has dotenv for convenience
-
-    $geotoken = $db->env->geolocationDb;
-    $url      = "https://geolocation-db.com/json/$geotoken/$ip";
-
-    $geojson = file_get_contents($url);
-    $geo     = json_decode($geojson);
-
-    return $geo;
-}
-
-// function geoLanding()
-// {
-//     global $db, $time, $geodata, $profile, $session, $visitor, $payload, $server;
-
-//     $cmne   = 'GLND';
-//     $handle = Handle::create('time', $cmne, $time);
-
-//     $slots = [];
-
-//     $slots['handle']  = $handle;
-//     $slots['service'] = 'tracker';
-//     $slots['project'] = substr($visitor, 0, 1);
-
-//     $slots['profile']    = $profile;
-//     $slots['session']    = $session;
-//     $slots['created_at'] = date('Y-m-d H:i:s');
-//     $slots['cmne']       = $cmne;
-//     $slots['time']       = $time;
-//     $slots['visitcode']  = Tools::visitCode($time);
-//     $slots['visitdate']  = Tools::visitDate($time);
-
-//     $slots['category'] = 'page';
-//     $slots['action']   = 'geo';
-//     $slots['value']    = $visitor;
-
-//     $slots['url']      = $payload['url'];
-//     $slots['domain']   = $payload['domain'];
-//     $slots['path']     = $payload['path'];
-//     $slots['query']    = $payload['query'];
-//     $slots['fragment'] = $payload['fragment'];
-
-//     $slots['attr_1'] = $server->forwardedFor;
-//     $slots['attr_2'] = $geodata->country_code;
-//     $slots['attr_3'] = $geodata->country_name;
-//     $slots['attr_4'] = $geodata->state;
-//     $slots['attr_5'] = $geodata->city;
-//     $slots['attr_6'] = $geodata->postal;
-//     $slots['attr_7'] = $geodata->latitude;
-//     $slots['attr_8'] = $geodata->longitude;
-
-//     // Keepers
-//     $slots['large_1'] = json_encode($geodata);
-
-//     $db->insert('track_timelines', $slots);
-// }
+// --
+// -- HELPERS --
+// --
 
 function trackLanding()
 {
@@ -160,46 +97,48 @@ function trackLanding()
     $cmne   = 'TLND';
     $handle = Handle::create('time', $cmne, $time);
 
-    $slots = [];
+    $columns = [];
 
-    $slots['handle']  = $handle;
-    $slots['service'] = 'tracker';
-    $slots['project'] = substr($visitor, 0, 1);
+    $columns['handle']  = $handle;
+    $columns['service'] = 'tracker';
+    $columns['project'] = substr($visitor, 0, 1);
 
-    $slots['profile']    = $profile;
-    $slots['session']    = $session;
-    $slots['created_at'] = date('Y-m-d H:i:s');
-    $slots['cmne']       = $cmne;
-    $slots['time']       = $time;
-    $slots['visitcode']  = Tools::visitCode($time);
-    $slots['visitdate']  = Tools::visitDate($time);
+    $columns['profile']    = $profile;
+    $columns['session']    = $session;
+    $columns['created_at'] = date('Y-m-d H:i:s');
+    $columns['cmne']       = $cmne;
+    $columns['time']       = $time;
+    $columns['visitcode']  = Tools::visitCode($time);
+    $columns['visitdate']  = Tools::visitDate($time);
 
-    $slots['category'] = 'page';
-    $slots['action']   = 'visit';
-    $slots['value']    = $visitor;
+    $columns['category'] = 'page';
+    $columns['action']   = 'visit';
+    $columns['value']    = $visitor;
 
-    $slots['url']      = $payload['url'];
-    $slots['domain']   = $payload['domain'];
-    $slots['path']     = $payload['path'];
-    $slots['query']    = $payload['query'];
-    $slots['fragment'] = $payload['fragment'];
+    $columns['url']      = $payload['url'];
+    $columns['domain']   = $payload['domain'];
+    $columns['path']     = $payload['path'];
+    $columns['query']    = $payload['query'];
+    $columns['fragment'] = $payload['fragment'];
 
-    $slots['attr_1'] = $server->forwardedFor;
-    $slots['attr_2'] = $server->realIp;
-    $slots['attr_3'] = $browser->hash;
-    $slots['attr_4'] = $browser->device;
-    $slots['attr_5'] = $browser->browser;
-    $slots['attr_6'] = isset($returncode) ? $returncode : null;
-    $slots['attr_7'] = isset($contact) ? $contact : null;
+    $columns['attr_1'] = $server->forwardedFor;
+    $columns['attr_2'] = $server->realIp;
+    $columns['attr_3'] = $browser->hash;
+    $columns['attr_4'] = $browser->device;
+    $columns['attr_5'] = $browser->browser;
+    $columns['attr_6'] = isset($returncode) ? $returncode : null;
+    $columns['attr_7'] = isset($contact) ? $contact : null;
 
     // Keepers
-    $slots['large_1'] = $server->queryString;
+    $columns['large_1'] = $server->queryString;
 
-    $db->insert('track_timelines', $slots);
+    $db->insert('track_timelines', $columns);
 }
 
 function findByReturnCode($db, $elrt, $browser, $profile)
 {
+    global $redis;
+
     $tokenstack = $db->findToken($elrt);
 
     if ($tokenstack) {
@@ -207,7 +146,8 @@ function findByReturnCode($db, $elrt, $browser, $profile)
         $contact = $tokenstack['contact'];
         updateVisit($db, $profile, $browser);
 
-        file_put_contents('tmp.log', "Found profile on return token.\n", FILE_APPEND);
+        $redis->storeLog("Found profile on return token.");
+        // file_put_contents('tmp.log', "Found profile on return token.\n", FILE_APPEND);
     } else {
         $contact = null;
         // this is weird and could not happen ...
@@ -219,17 +159,21 @@ function findByReturnCode($db, $elrt, $browser, $profile)
 
 function findOrCreateProfileFromVisitorToken($db, $visitor, $browser)
 {
+    global $redis;
+
     $tokenstack = $db->findToken($visitor);
 
     if ($tokenstack) {
         $profile = $tokenstack['profile'];
         updateVisit($db, $profile, $browser);
 
-        file_put_contents('tmp.log', "Found profile on token.\n", FILE_APPEND);
+        $redis->storeLog("Found profile on token.");
+        // file_put_contents('tmp.log', "Found profile on token.\n", FILE_APPEND);
     } else {
         $profile = newVisit($db, $visitor, $browser);
 
-        file_put_contents('tmp.log', "Create profile and token.\n", FILE_APPEND);
+        $redis->storeLog("Create profile and token.");
+        // file_put_contents('tmp.log', "Create profile and token.\n", FILE_APPEND);
     }
 
     return $profile;

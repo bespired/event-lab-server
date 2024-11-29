@@ -17,6 +17,8 @@
         repeats:
             amount: 5
             columns:
+                real_ip:       name36
+                count:         int
                 country_code:  mnemonic
                 country_name:  name
                 state:         name
@@ -24,5 +26,7 @@
                 postal:        handle-null
                 latitude:      handle-null
                 longitude:     handle-null
-                real_ip:       name36
+
+
+
 
