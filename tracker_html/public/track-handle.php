@@ -165,7 +165,8 @@ function findOrCreateProfileFromVisitorToken($db, $visitor, $browser)
 
     if ($tokenstack) {
         $profile = $tokenstack['profile'];
-        updateVisit($db, $profile, $browser);
+
+        updateVisit($db, $profile);
 
         $redis->storeLog("Found profile on token.");
         // file_put_contents('tmp.log', "Found profile on token.\n", FILE_APPEND);
@@ -179,9 +180,19 @@ function findOrCreateProfileFromVisitorToken($db, $visitor, $browser)
     return $profile;
 }
 
-function updateVisit($db, $profile, $browser)
+function updateVisit($db, $profile)
 {
+    global $time;
+
     $db->increment('profiles', 'visitcount', $profile);
+
+    $columns = [];
+
+    $columns['lastvistcode'] = Tools::visitCode($time);
+    $columns['lastvistdate'] = Tools::visitDate($time);
+
+    $db->update('profiles', $columns, ['handle' => $profile]);
+
 }
 
 function newVisit($db, $visitor, $browser)
