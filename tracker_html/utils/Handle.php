@@ -15,6 +15,8 @@ class Handle
             $md5 = md5($_SERVER['REMOTE_ADDR']);
         }
 
+        $count += (int) microtime();
+
         $base60 = str_split('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789');
 
         $dte = new DateTimeImmutable();
@@ -38,7 +40,8 @@ class Handle
 
         $cli = $base60[hexdec(substr($md5, 0, 12)) % 60];
 
-        $rnd = $cli . $dhr . $dmm . $dsc . $mcs;
+        $s   = $base60[(int) rand(0, 60) % 60];
+        $rnd = $cli . $s . $dhr . $dmm . $dsc . $mcs;
 
         // todo: fix this for all projects
         $prj = $base60[0];
@@ -46,7 +49,9 @@ class Handle
             $prj = $parsed->project;
         }
 
-        $when = $prj . $idx . $base60[$coy] . $base60[$dow];
+        $r = $base60[(int) rand(0, 60) % 60];
+
+        $when = $prj . $r . $idx . $base60[$coy] . $base60[$dow];
         $what = $tbl;
 
         $ctr = $when . $ceml . $rnd;

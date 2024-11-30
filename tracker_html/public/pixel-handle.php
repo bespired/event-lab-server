@@ -29,7 +29,7 @@ $redis->htStart('tokens');
 $atomic = $redis->topToken();
 while ($atomic) {
     // file_put_contents('tmp.log', sprintf("%s %s\n", date('Y.m.d H:i:s'), $atomic), FILE_APPEND);
-    $redis->storeLog($atomic);
+    $redis->storeLog('Pixel:' . $atomic);
 
     // Handle the atomic token...
     // split atomic token...

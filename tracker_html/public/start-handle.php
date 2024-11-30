@@ -23,14 +23,9 @@ $db = new MyDB();
 
 $redis->htStart('landing');
 
-// Read Attributes of where table=tracker
-// so name can be compared to aggrigate--/category/-/action/-/value/
-// if in Attributes then do the aggrigation
-
 $visit = $redis->topVisit();
 while ($visit) {
-    // file_put_contents('tmp.log', sprintf("%s %s\n", date('Y.m.d H:i:s'), $visit), FILE_APPEND);
-    $redis->storeLog($visit);
+    $redis->storeLog('Visit:' . $visit);
 
     // Handle the atomic token...
     // split atomic token...
@@ -78,7 +73,7 @@ while ($visit) {
     // $redis->tellChannel11('yet another visitor.');
 
     $redis->storeGeo($profile, $server->forwardedFor);
-    $cmd = 'php track-geo.php > /dev/null 2>/dev/null &';
+    $cmd = 'php start-geo.php > /dev/null 2>/dev/null &';
     shell_exec($cmd);
 
     $visit = $redis->topVisit();
@@ -89,6 +84,7 @@ $redis->close();
 $db->close();
 
 exit;
+
 // --
 // -- HELPERS --
 // --

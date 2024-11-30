@@ -109,6 +109,19 @@ class MyCache
         return $this->redis->rpop('pop-geos');
     }
 
+    // -- TRACK HELPERS
+
+    public function storeEvent($encoded)
+    {
+        $value = sprintf('%s::%s', $encoded, time());
+        $this->redis->rpush('pop-events', $value);
+    }
+
+    public function topEvent()
+    {
+        return $this->redis->rpop('pop-events');
+    }
+
     // -- LOG HELPERS
 
     public function storeLog($message)

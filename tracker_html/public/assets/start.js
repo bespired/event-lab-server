@@ -1,3 +1,4 @@
+var eventLabUrl = 'https://localhost/--/tracker/'
 
 function oajhdi(str) { return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, function toSolidBytes(match, p1) { return String.fromCharCode('0x' + p1); })) }
 
@@ -5,7 +6,7 @@ function fpiogi() { var e=Array.prototype.forEach,n=Array.prototype.map;this.eac
 function atuiaj() {
 
     // var url = 'https://77.161.128.35:8080/--/tracker/start.php'
-    var url = 'https://localhost/--/tracker/start.php?'
+    var url = eventLabUrl + 'start?'
 
     var visitor = localStorage.getItem('eventlab-visitor')
     if ((visitor === undefined) || (visitor === 'undefined')) visitor = null
@@ -42,6 +43,29 @@ function atuiaj() {
 
             // then send header stuff ... referer etc...
         })
+
 }
+
+var eventLabBaseArray = [];
+
+var eventLabEvents = new Proxy(eventLabBaseArray, {
+    set: function(target, property, value, receiver) {
+        target[property] = value;
+
+        // console.log(target, property, value, receiver)
+
+        if (property !== 'length') {
+            var visitor = localStorage.getItem('eventlab-visitor')
+            value.visitor = visitor
+            value.href    = location.href
+
+            var url = eventLabUrl + 'post?'
+            var data = oajhdi(JSON.stringify(value))
+            fetch(url + data)
+        }
+        return true;
+    }
+});
+
 
 atuiaj();

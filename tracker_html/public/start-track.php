@@ -126,7 +126,7 @@ foreach ($items as $key => $itemname) {
 }
 
 $redis->storeVisit($visitor, $session, $mode, json_encode($server));
-$cmd = 'php track-handle.php > /dev/null 2>/dev/null &';
+$cmd = 'php start-handle.php > /dev/null 2>/dev/null &';
 shell_exec($cmd);
 
 $redis->close();
@@ -135,6 +135,8 @@ $redis->close();
 
 $response['session'] = $session;
 $response['mode']    = $mode;
+$response['page']    = 'page mnemonic needed';
+
 if ($visitor) {
     $response['visitor'] = $visitor;
 }

@@ -125,11 +125,11 @@ class MyDB
         $sql .= sprintf("INSERT INTO `%s` (%s) \n", $tableName, $columns);
         $sql .= sprintf('VALUES (%s) ', $inserts);
 
-        // file_put_contents(__DIR__ . '/../public/tmp.log',
-        // sprintf("%s %s\n", date('Y.m.d H:i:s'), $sql), FILE_APPEND);
-
         $this->connect();
         $result = $this->conn->query($sql);
+
+        // TODO: if handle collides then create new handle.
+        // Maybe best to use Handle for that because of crc
 
         return $result;
     }
