@@ -9,6 +9,3 @@ include_once '../router/posts.php';
 
 // If nothing works load the basic html
 include_once '../router/html.php';
-
-?>
-

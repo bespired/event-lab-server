@@ -52,23 +52,24 @@ while ($geo) {
     $sql .= 'WHERE `project` = "' . $project . '" ';
     $sql .= 'AND `profile` = "' . $profile . '" ';
 
-    $first = $db->first($sql);
+    $found = $db->first($sql);
 
-    if (! $first) {
+    if (! $found) {
 
         $redis->storeLog('New location ' . $realip);
         $geodata = geoData($realip);
         trackGeo($geodata, true);
+        geoProfile($geodata);
 
     } else {
 
         $ips = [
             'Entry 0 indexed',
-            $first['real_ip_1'],
-            $first['real_ip_2'],
-            $first['real_ip_3'],
-            $first['real_ip_4'],
-            $first['real_ip_5'],
+            $found['real_ip_1'],
+            $found['real_ip_2'],
+            $found['real_ip_3'],
+            $found['real_ip_4'],
+            $found['real_ip_5'],
         ];
 
         if (! in_array($realip, $ips)) {
@@ -141,4 +142,14 @@ function trackGeo($geodata, $isNew, $slot = 1)
         $db->update('accu_geolocation', $columns, ['profile' => $profile]);
     }
 
+}
+
+function geoProfile($geodata)
+{
+    global $db, $profile;
+    $columns = [];
+
+    $columns['firstcountry'] = $geodata->country_code;
+
+    $db->update('profiles', $columns, ['handle' => $profile]);
 }

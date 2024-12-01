@@ -6,15 +6,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
     $router = new Router();
 
     switch ($router->package) {
-    case 'root':
-        include_once '../packages/root/Root.php';
-        Root::handle($router);
-        break;
+        case 'root':
+            include_once '../packages/root/Root.php';
+            Root::handle($router);
+            break;
 
-    case 'card':
-        include_once '../packages/card/Card.php';
-        Card::handle($router);
-        break;
+        case 'card':
+            include_once '../packages/card/Card.php';
+            Card::handle($router);
+            break;
     }
 
     include_once '../router/html.php';
