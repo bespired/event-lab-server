@@ -1,0 +1,4 @@
+Successfully received certificate.
+Certificate is saved at: /etc/letsencrypt/live/bespired.com/fullchain.pem
+Key is saved at:         /etc/letsencrypt/live/bespired.com/privkey.pem
+This certificate expires on 2025-03-06.

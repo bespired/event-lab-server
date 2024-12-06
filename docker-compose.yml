@@ -94,9 +94,11 @@ services:
     volumes:
       - ./public_html:/var/www/html/
     labels:
-      - traefik.http.routers.public.rule=Host(`eventlab.com`)
-      - traefik.http.routers.public.priority=10
-      - traefik.http.routers.public.tls=true
+      - traefik.http.routers.secure.rule=HostRegexp(`^.+\.eventlab\.com$`)
+      - traefik.http.routers.secure.priority=21
+      - traefik.http.routers.secure.tls=true
+      - traefik.http.routers.public.rule=PathPrefix(`/`)
+      - traefik.http.routers.public.priority=5
 
   ratchet:
     build:
@@ -121,10 +123,12 @@ services:
       # ws
       - traefik.http.routers.ws-service-ws.rule=Host(`eventlab.com`)
       - traefik.http.routers.ws-service-ws.entrypoints=ws
+      - traefik.http.routers.ws-service-ws.priority=25
       # wss
       - traefik.http.routers.ws-service-wss.rule=Host(`eventlab.com`)
       - traefik.http.routers.ws-service-wss.entrypoints=wss
       - traefik.http.routers.ws-service-wss.tls=true
+      - traefik.http.routers.ws-service-wss.priority=28
       # - traefik.http.routers.ws-service-wss.tls.certresolver=dns
 
   mysql:
