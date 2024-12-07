@@ -42,7 +42,7 @@
 	</style>
 </head>
 <body>
-	<img src="/assets/route.svg" />
+	<img src="/svg/route.svg" />
 	<div class="serv">Server</div>
 	<div class="event" >EVENT LAB</div>
 	<div class="know">Helping you to make the right decision</div>

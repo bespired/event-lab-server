@@ -1,0 +1,10 @@
+RewriteEngine On
+
+RewriteRule ^(.*)assets/(.*)$ assets/$2 [L]
+
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+
+RewriteRule . /index.html [L]
+
+# Traefik sends only https://eventlab.com/--/admin/ to this apache

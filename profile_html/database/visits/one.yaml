@@ -1,0 +1,34 @@
+---
+
+    profile:
+        device: mobile
+
+
+    pages:
+        -
+            date: today
+            time: 32,40
+            from: google.com
+            page: https://domain/about-us
+            events:
+                - page | scroll | 25%
+                - page | scroll | 50%
+
+        -
+            date: today
+            time: 16,24
+            from: https://domain/about-us
+            page: https://domain
+            events:
+                - page | scroll | 25%
+
+        -
+            date: today
+            time: 16,24
+            from: https://domain/about-us
+            page: https://domain
+            events:
+                - page | scroll | 25%
+                - page | scroll | 50%
+                - page | scroll | 75%
+                - form | submit | newsletter

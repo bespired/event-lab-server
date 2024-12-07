@@ -36,6 +36,24 @@ services:
       # - ./docker/traefik/:/etc/traefik/dynamic/
       - /var/run/docker.sock:/var/run/docker.sock
 
+  admin:
+    build:
+      context: ./docker/apache
+      dockerfile: ./admin.dockerfile
+
+    env_file: "./admin_html/docker.env"
+    restart: unless-stopped
+    container_name: docker.admin
+    tty: true
+    networks:
+      - docker.network
+    volumes:
+      - ./admin_html:/var/www/html/
+    labels:
+      - traefik.http.routers.admin.rule=PathPrefix(`/--/admin`)
+      - traefik.http.routers.admin.tls=true
+      - traefik.http.routers.admin.priority=800
+
   profile:
     build:
       context: ./docker/apache
@@ -51,12 +69,10 @@ services:
       - docker.network
     volumes:
       - ./profile_html:/var/www/html/
-      # - ./docker/apache/ssl/mycert.crt:/etc/ssl/certs/mycert.crt
-      # - ./docker/apache/ssl/mycert.key:/etc/ssl/private/mycert.key
     labels:
       - traefik.http.routers.profile.rule=PathPrefix(`/--/profile`)
       - traefik.http.routers.profile.tls=true
-      - traefik.http.routers.profile.priority=100
+      - traefik.http.routers.profile.priority=600
 
   tracker:
     build:
@@ -75,7 +91,7 @@ services:
       - ./tracker_html:/var/www/html/
     labels:
       - traefik.http.routers.tracker.rule=PathPrefix(`/--/tracker`)
-      - traefik.http.routers.tracker.priority=110
+      - traefik.http.routers.tracker.priority=700
       - traefik.http.routers.tracker.tls=true
 
   website:
@@ -95,10 +111,10 @@ services:
       - ./public_html:/var/www/html/
     labels:
       - traefik.http.routers.secure.rule=HostRegexp(`^.+\.eventlab\.com$`)
-      - traefik.http.routers.secure.priority=21
+      - traefik.http.routers.secure.priority=300
       - traefik.http.routers.secure.tls=true
       - traefik.http.routers.public.rule=PathPrefix(`/`)
-      - traefik.http.routers.public.priority=5
+      - traefik.http.routers.public.priority=100
 
   ratchet:
     build:
@@ -123,12 +139,12 @@ services:
       # ws
       - traefik.http.routers.ws-service-ws.rule=Host(`eventlab.com`)
       - traefik.http.routers.ws-service-ws.entrypoints=ws
-      - traefik.http.routers.ws-service-ws.priority=25
+      - traefik.http.routers.ws-service-ws.priority=400
       # wss
       - traefik.http.routers.ws-service-wss.rule=Host(`eventlab.com`)
       - traefik.http.routers.ws-service-wss.entrypoints=wss
       - traefik.http.routers.ws-service-wss.tls=true
-      - traefik.http.routers.ws-service-wss.priority=28
+      - traefik.http.routers.ws-service-wss.priority=500
       # - traefik.http.routers.ws-service-wss.tls.certresolver=dns
 
   mysql:
@@ -166,7 +182,9 @@ services:
       - ./docker/redis/redis.conf:/usr/local/etc/redis/redis.conf
 
     # command: /bin/sh -c "redis-server --requirepass $$REDIS_ROOT_PASSWORD && redis-server /usr/local/etc/redis/redis.conf"
-    command: /bin/sh -c "redis-server /usr/local/etc/redis/redis.conf --requirepass $$REDIS_ROOT_PASSWORD"
+    command: >
+      /bin/sh -c "redis-server /usr/local/etc/redis/redis.conf --requirepass $$REDIS_ROOT_PASSWORD"
+      && sudo sysctl -w vm.overcommit_memory=1
 
     environment:
       ALLOW_EMPTY_PASSWORD: ${REDIS_ALLOW_EMPTY_PASSWORD:-no}
