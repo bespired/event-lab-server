@@ -33,7 +33,6 @@ services:
       # Mount the directory containing the certs
       - ./docker/traefik/:/certs/
       - ./docker/traefik/traefik.yaml:/certs/traefik.yaml
-      # - ./docker/traefik/:/etc/traefik/dynamic/
       - /var/run/docker.sock:/var/run/docker.sock
 
   admin:
@@ -94,7 +93,7 @@ services:
       - traefik.http.routers.tracker.priority=700
       - traefik.http.routers.tracker.tls=true
 
-  website:
+  public:
     build:
       context: ./docker/apache
       dockerfile: ./public.dockerfile
@@ -145,11 +144,11 @@ services:
       - traefik.http.routers.ws-service-wss.entrypoints=wss
       - traefik.http.routers.ws-service-wss.tls=true
       - traefik.http.routers.ws-service-wss.priority=500
-      # - traefik.http.routers.ws-service-wss.tls.certresolver=dns
 
   mysql:
     image: arm64v8/mysql:latest
     platform: linux/arm64
+
     restart: unless-stopped
     container_name: docker.mysql
     tty: true

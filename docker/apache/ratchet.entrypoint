@@ -2,7 +2,6 @@
 
 set -e
 
-# curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 php /usr/local/bin/composer require cboden/ratchet
 
 php server.php
