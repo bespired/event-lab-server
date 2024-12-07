@@ -29,5 +29,7 @@ COPY ./ssl/*.key /etc/apache2/ssl/
 
 COPY ./profile.conf /etc/apache2/sites-available/000-default.conf
 
+RUN echo "ServerName bespired.com" >> /etc/apache2/apache2.conf
+
 EXPOSE 80
 EXPOSE 443
