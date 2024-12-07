@@ -48,4 +48,11 @@ I'm not storing my real secrets in git.
 secrets are in secrets.env  Dot.php will read that file
 
 
+Working on getting it running on AWS in a EC2.  
+Sortof works... 
+But difficult for me to get the server name abstracted...
+Local my project name is eventlab, and on production it is called bespired.com
+I don't grasp how to get that captured in one docker-compose file.
+
+
 
