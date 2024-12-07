@@ -1,4 +1,4 @@
-openssl req -x509 -out eventlab.com.crt -keyout eventlab.com.key \
+openssl req -x509 -out mycert.crt -keyout mycert.key \
   -newkey rsa:2048 -nodes -sha256 \
   -subj '/CN=eventlab.com' -extensions EXT -config <( \
    printf "[dn]\nCN=eventlab.com\n[req]\ndistinguished_name = dn\n[EXT]\nsubjectAltName=DNS:eventlab.com\nkeyUsage=digitalSignature\nextendedKeyUsage=serverAuth")
