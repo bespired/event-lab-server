@@ -42,15 +42,15 @@ $cmd .= "~/eventlab/event-lab-server/docker/traefik/mycert.key";
 echo "$cmd \n";
 print_r(shell_exec($cmd));
 
-$cmd = "sudo cp /etc/letsencrypt/live/bespired.com/fullchain.pem ";
-$cmd .= "~/eventlab/event-lab-server/docker/mysql/dbdata/ca.pem";
-echo "$cmd \n";
-print_r(shell_exec($cmd));
+// $cmd = "sudo cp /etc/letsencrypt/live/bespired.com/fullchain.pem ";
+// $cmd .= "~/eventlab/event-lab-server/docker/mysql/dbdata/ca.pem";
+// echo "$cmd \n";
+// print_r(shell_exec($cmd));
 
-$cmd = "sudo cp /etc/letsencrypt/live/bespired.com/privkey.pem ";
-$cmd .= "~/eventlab/event-lab-server/docker/mysql/dbdata/ca-key.pem";
-echo "$cmd \n";
-print_r(shell_exec($cmd));
+// $cmd = "sudo cp /etc/letsencrypt/live/bespired.com/privkey.pem ";
+// $cmd .= "~/eventlab/event-lab-server/docker/mysql/dbdata/ca-key.pem";
+// echo "$cmd \n";
+// print_r(shell_exec($cmd));
 
 echo "Change server names.\n";
 $cmd = "php php/servername.php";
