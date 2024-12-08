@@ -1,7 +1,7 @@
 <?php
 
 $servername = "bespired";
-// change `eventlab.com` to current servername
+// change `eventlab.com` to current servername;
 
 $filenames = [
     "docker-compose.yml",
@@ -22,4 +22,15 @@ foreach ($filenames as $filename) {
     } else {
         echo "Cannot find $filename \n";
     }
+}
+
+$filenames = glob('admin_html/public/assets/*.js');
+
+foreach ($filenames as $filename) {
+    $content = file_get_contents($filename);
+    if (strpos($content, 'eventlab.com') > 0) {
+        $content = str_replace('eventlab.com', $servername . '.com', $content);
+        echo "Swapped eventlab.com into $servername.com in file $filename \n";
+    }
+
 }
