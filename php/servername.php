@@ -30,6 +30,7 @@ foreach ($filenames as $filename) {
     $content = file_get_contents($filename);
     if (strpos($content, 'eventlab.com') > 0) {
         $content = str_replace('eventlab.com', $servername . '.com', $content);
+        file_put_contents($filename, $content);
         echo "Swapped eventlab.com into $servername.com in file $filename \n";
     }
 
