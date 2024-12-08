@@ -8,6 +8,12 @@ echo "$cmd \n";
 print_r(shell_exec($cmd));
 echo "\n";
 
+echo "Clear manual changes.\n";
+$cmd = "git clean -f ";
+echo "$cmd \n";
+print_r(shell_exec($cmd));
+echo "\n";
+
 echo "Pull new code.\n";
 $cmd = "git pull";
 echo "$cmd \n";
