@@ -13,10 +13,10 @@ $loop = React\EventLoop\Factory::create();
 
 $webSock = new React\Socket\Server('0.0.0.0:9001', $loop);
 $webSock = new React\Socket\SecureServer($webSock, $loop, [
-    'local_cert'        => '/certs/eventlab.com.crt', // path to your cert
-    'local_pk'          => '/certs/eventlab.com.key', // path to your server private key
-    'allow_self_signed' => true, // Allow self signed certs (should be false in production)
-    'verify_peer'       => false,
+    'local_cert' => '/certs/mycert.crt', // path to your cert
+    'local_pk'   => '/certs/mycert.key', // path to your server private key
+    'allow_self_signed' => true,         // Allow self signed certs (should be false in production)
+    'verify_peer' => false,
 ]);
 
 $webServer = new IoServer(

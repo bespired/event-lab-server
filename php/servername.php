@@ -23,3 +23,7 @@ foreach ($filenames as $filename) {
         echo "Cannot find $filename \n";
     }
 }
+
+// this needs removed:
+// image: arm64v8/mysql:latest
+// platform: linux/arm64
