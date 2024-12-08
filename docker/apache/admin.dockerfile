@@ -1,6 +1,9 @@
-FROM php:8-apache
+FROM php:8.3.4-apache
 
 RUN a2enmod ssl && a2enmod rewrite
+
+RUN apt-get update && apt-get upgrade -y \
+    curl unzip nano
 
 RUN mkdir -p /etc/apache2/ssl
 COPY ./ssl/*.pem /etc/apache2/ssl/
