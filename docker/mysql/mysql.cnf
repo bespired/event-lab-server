@@ -9,7 +9,10 @@ collation-server = utf8mb4_unicode_ci
 
 [client]
 ssl-mode = DISABLED
+skip-ssl = 1
 default-character-set = utf8mb4
 
 [mysql]
 default-character-set = utf8mb4
+
+
