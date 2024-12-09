@@ -1,16 +1,17 @@
 <?php
 
-$servername = "bespired";
+$servername = 'bespired';
 // change `eventlab.com` to current servername;
 
 $filenames = [
-    "docker-compose.yml",
-    "profile_html/docker.env",
-    "tracker_html/docker.env",
-    "public_html/docker.env",
-    "public_html/public/.htaccess",
-    "profile_html/public/.htaccess",
-    "profile_html/database/seeds/projects/projects.yaml",
+    'docker-compose.yml',
+    'profile_html/docker.env',
+    'tracker_html/docker.env',
+    'public_html/docker.env',
+    'public_html/public/.htaccess',
+    'profile_html/public/.htaccess',
+    'profile_html/database/seeds/projects/projects.yaml',
+    'tracker_html/public/assets/start.js',
 ];
 
 foreach ($filenames as $filename) {
@@ -33,5 +34,4 @@ foreach ($filenames as $filename) {
         file_put_contents($filename, $content);
         echo "Swapped eventlab.com into $servername.com in file $filename \n";
     }
-
 }
