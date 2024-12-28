@@ -6,3 +6,4 @@
 websocket/vendor/*
 websocket/vendor/
 tracker_html/public/tmp.log
+public_html/public/assets/*

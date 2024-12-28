@@ -29,6 +29,18 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             (new Lab())->handle($router);
             break;
 
+        case 'assets':
+            $router->protected();
+
+            switch ($router->action) {
+                case 'list':
+                    include_once __DIR__ . '/../packages/asset/Asset.php';
+                    (new Asset($router->projectChar))->list($router);
+                    break;
+            }
+
+            break;
+
         case 'profiles':
             $router->protected();
 

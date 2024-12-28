@@ -1,0 +1,37 @@
+---
+    label: Projects
+    dependancy: ~
+
+    tablename: sys_assets
+
+    columns:
+        id:         incremental
+        handle:     handle
+        owner:      handle-null
+        project:    base1
+        cmne:       mnemonic
+        type:       name  # see types.
+        mimetype:   name  # image, document, font, etc.
+        version:    name
+        url:        name  # url is name without version.
+        name:       name  # name is url with version.
+        label:      label
+        tags:       large # json with tags.
+        deleted_at: timestamp
+
+    # seeds: assets
+
+
+#illustrations  article-illustration <=  in dated folder
+#pictures       page-image           <=  in dated folder
+#email          email-illustration   <=  in dated folder
+#images         website-image        <=  in image folder
+#icons          website-icon         <=  in icon  folder
+#logos          website-logo         <=  in logo  folder
+#links          link-image           <=  in link  folder
+#documents      download-document    <=  in file  folder
+#font-file      font-file            <=  in font  folder
+#font-glyph     font-glyph           <=  in glyph folder
+#style-file     style-file           <=  in glyph folder
+#script-file    script-file          <=  in script folder
+#private        private-file         <=  route to file in private folder
