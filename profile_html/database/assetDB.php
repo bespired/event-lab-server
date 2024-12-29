@@ -6,6 +6,12 @@ include_once '../packages/utils/globs.php';
 include_once '../packages/utils/Handle.php';
 include_once '../packages/utils/MyDB.php';
 include_once '../packages/utils/ExtoMime.php';
+include_once '../packages/utils/Woff.php';
+include_once '../packages/utils/PDF2Text.php';
+
+// use Woff;
+// @see         https://github.com/teicee/php-woff-converter
+// @author      Grégory Marigot (téïcée) <gmarigot@teicee.com> (@proxyconcept)
 
 $db = new MyDB();
 
@@ -16,6 +22,8 @@ if (is_null($found)) {
     echo "Need an owner in DB. \n";
     exit;
 }
+
+removeOldInstall($db);
 
 $contact  = $found['handle'];
 $count    = 0;
@@ -46,20 +54,25 @@ foreach (types() as $typename => $settings) {
         $mime    = $exttomime[".$extention"];
         $asset   = Handle::make($count, $cmne, 'asset');
 
-        $url = sprintf('/asset/%s/%s.%s', $folder, $name, $extention);
+        $file = sprintf('/%s/%s.%s', $folder, $name, $extention);
+        $file = str_replace('/dated/', "/$datecode/", $file);
+
+        $url = sprintf('/assets/%s/%s.%s', $folder, $name, $extention);
         $url = str_replace('/dated/', "/$datecode/", $url);
 
-        $payload['handle']   = $asset;
-        $payload['owner']    = $contact;
-        $payload['project']  = 'a';
-        $payload['cmne']     = $cmne;
-        $payload['type']     = $typename;
-        $payload['mimetype'] = $mime;
-        $payload['version']  = 1;
-        $payload['url']      = $url;
-        $payload['name']     = sprintf('%s--%s', $name, 1);
-        $payload['label']    = ucfirst($name);
-        $payload['tags']     = sprintf('["%s", "%s"]', $typename, $extention);
+        $payload['handle']     = $asset;
+        $payload['owner']      = $contact;
+        $payload['project']    = 'a';
+        $payload['cmne']       = $cmne;
+        $payload['type']       = $typename;
+        $payload['mimetype']   = $mime;
+        $payload['version']    = 1;
+        $payload['dimensions'] = filedimensions($root . $file);
+        $payload['size']       = human_filesize(filesize($root . $file));
+        $payload['url']        = $url;
+        $payload['name']       = sprintf('%s--%s', $name, 1);
+        $payload['label']      = ucfirst(str_replace('-', ' ', $name));
+        $payload['tags']       = sprintf('["%s", "%s"]', $typename, $extention);
 
         $db->insert('sys_assets', $payload);
 
@@ -73,6 +86,61 @@ echo "$count assets made.\n";
 $db->close();
 
 exit;
+
+function filedimensions($filename)
+{
+    $data = @getimagesize($filename);
+
+    if ($data) {
+        return $data[0] . 'px, ' . $data[1] . 'px';
+    }
+
+    if (str_ends_with($filename, '.pdf')) {
+        $stream = new SplFileObject($filename);
+
+        $result = false;
+
+        $re  = '/\/MediaBox \[([\s\S]*)\]/m';
+        $str = '/MediaBox [0 0 612 792]';
+
+        while (! $stream->eof()) {
+            $read = $stream->fgets();
+
+            preg_match_all($re, $read, $matches, PREG_SET_ORDER, 0);
+
+            if (count($matches)) {
+                $values    = explode(' ', $matches[0][1]);
+                $widthUSU  = intval($values[2]) - intval($values[0]);
+                $heightUSU = intval($values[3]) - intval($values[1]);
+
+                $widthMM  = round($widthUSU * 0.35306);
+                $heightMM = round($heightUSU * 0.35306);
+
+                return sprintf('%smm, %smm', $widthMM, $heightMM);
+                break;
+            }
+
+        }
+
+        // /MediaBox [0 0 612 792] = Letter
+        // User space unit  1/72 inch = 0.35306 mm
+        // A4 = 210 x 297 mm    8.3 x 11.7 in
+        // 216.07272 x 279.62352
+        $stream = null;
+
+    }
+    return '';
+}
+
+function human_filesize($bytes)
+{
+    $factor = floor((strlen($bytes) - 1) / 3);
+    if ($factor > 0) {
+        $sz = 'KMGT';
+    }
+
+    return sprintf("%.0f ", $bytes / pow(1024, $factor)) . @$sz[$factor - 1] . 'B';
+}
 
 function createAsset($typename, $settings, $count)
 {
@@ -102,6 +170,7 @@ function createAsset($typename, $settings, $count)
         case "image":
             $extention = 'png';
             $name      = $typename . '-' . $count;
+            echo "creating $name \n";
 
             $png_image = imagecreate(640, 400);
             imagecolorallocate($png_image, 15, 142, 210);
@@ -109,6 +178,7 @@ function createAsset($typename, $settings, $count)
             $filename = sprintf('%s/%s/%s.%s', $root, $folder, $name, $extention);
             imagepng($png_image, $filename);
             imagedestroy($png_image);
+
             break;
         case "icon":
         case "logo":
@@ -117,6 +187,8 @@ function createAsset($typename, $settings, $count)
             $name      = $typename . '-' . $count;
             $x         = $typename !== 'link' ? 45 * $count : 135;
             $y         = $typename !== 'link' ? 25 * $count : 90;
+
+            echo "creating $name \n";
 
             $x = $typename === 'icon' ? 150 : $x;
             $y = $typename === 'icon' ? 150 : $y;
@@ -127,11 +199,17 @@ function createAsset($typename, $settings, $count)
             $g = rand(140, 240);
             $b = rand(200, 255);
 
-            $png_image = imagecreate($x, $y);
-            imagecolorallocate($png_image, $r, $g, $b);
-            $white = imagecolorallocate($png_image, 255, 255, 255);
+            // $png_image = imagecreate($x, $y);
 
-            $font_path = '/Users/joeri/Library/Fonts/Roboto-Black.ttf';
+            $png_image = imagecreatetruecolor($x, $y);
+            imagesavealpha($png_image, true);
+
+            imagecolorallocate($png_image, $r, $g, $b);
+            $bgcolor = imagecolorallocatealpha($png_image, $r, $g, $b, 64);
+            imagefill($png_image, 0, 0, $bgcolor);
+
+            $white     = imagecolorallocate($png_image, 255, 255, 255);
+            $font_path = $root . '/font/' . 'abel-latin-400-normal.ttf';
 
             $text  = "$x x $y";
             $space = imagettfbbox($size, 0, $font_path, $text);
@@ -152,10 +230,59 @@ function createAsset($typename, $settings, $count)
             break;
         case "document":
             $extention = 'pdf';
+            echo "creating $name \n";
+
+            $src = 'https://www.learningcontainer.com/wp-content/uploads/2019/09/sample-pdf-file.pdf';
+            echo "loading from $src \n";
+
+            $pdffile  = file_get_contents($src);
+            $filename = sprintf('%s/%s/%s.%s', $root, $folder, $name, $extention);
+            file_put_contents($filename, $pdffile);
             break;
+
         case "font-file":
-            $extention = 'ttf';
+            $extention = 'woff';
+            $name      = 'abel-latin-400-normal';
+
+            echo "creating $name \n";
+            $src = 'https://fonts.bunny.net/abel/files/abel-latin-400-normal.woff';
+            echo "loading from $src \n";
+
+            $font     = file_get_contents($src);
+            $filename = sprintf('%s/%s/%s.%s', $root, $folder, $name, $extention);
+            file_put_contents($filename, $font);
+
+            // https://github.com/teicee/php-woff-converter/blob/main/README.md
+            Woff::toTTF($filename);
+
             break;
+
+        case "font-glyph":
+
+            $extention = 'zip';
+            $name      = 'iconfont';
+
+            echo "creating $name \n";
+            $src = 'http://joeri67.nl/glyphs.zip';
+            echo "loading from $src \n";
+
+            $font     = file_get_contents($src);
+            $filename = sprintf('%s/%s/%s.%s', $root, $folder, $name, $extention);
+            $pathname = sprintf('%s/%s/', $root, $folder);
+            file_put_contents($filename, $font);
+
+            // unzip -j /path/to/file.zip -d other_folder
+
+            $cmd = "unzip -j \"$filename\" -d \"$pathname\"";
+            shell_exec($cmd);
+
+            $dotfiles = glob($pathname . '._*');
+            foreach ($dotfiles as $dotfile) {
+                @unlink($dotfile);
+            }
+
+            break;
+
         case "script-file":
             $extention = 'js';
             break;
@@ -187,6 +314,9 @@ function createAsset($typename, $settings, $count)
 function types()
 {
     return [
+        "font-file"    => ["cmne" => 'ASFF', "count" => 1, "folder" => 'font'],
+        "document"     => ["cmne" => 'ASDC', "count" => 1, "folder" => 'file'],
+        "font-glyph"   => ["cmne" => 'ASFG', "count" => 1, "folder" => 'glyph'],
         "illustration" => ["cmne" => 'ASIL', "count" => 10, "folder" => 'dated'],
         "picture"      => ["cmne" => 'ASPC', "count" => 3, "folder" => 'dated'],
         "email-image"  => ["cmne" => 'ASEI', "count" => 5, "folder" => 'dated'],
@@ -194,10 +324,30 @@ function types()
         "icon"         => ["cmne" => 'ASIC', "count" => 12, "folder" => 'icon'],
         "logo"         => ["cmne" => 'ASLG', "count" => 3, "folder" => 'logo'],
         "link"         => ["cmne" => 'ASLK', "count" => 8, "folder" => 'link'],
-        "document"     => ["cmne" => 'ASDC', "count" => 1, "folder" => 'file'],
-        "font-file"    => ["cmne" => 'ASFF', "count" => 1, "folder" => 'font'],
-        // "font-glyph"   => ["cmne" => 'ASFG', "count" => 150, "folder" => 'glyph'],
         "script-file"  => ["cmne" => 'ASJS', "count" => 0, "folder" => 'script'],
         "style-file"   => ["cmne" => 'ASCS', "count" => 0, "folder" => 'style'],
     ];
+}
+
+function removeOldInstall($db)
+{
+    $db->truncate('sys_assets');
+    $root = realpath(__DIR__ . '/../../public_html/public/assets');
+
+    $depths = ['/*/*/*', '/*/*', '/*'];
+
+    foreach ($depths as $depth) {
+        $all = glob($root . $depth);
+
+        foreach ($all as $one) {
+            if (is_file($one)) {
+                @unlink($one);
+            }
+            if (is_dir($one)) {
+                @unlink($one . '/.DS_Store');
+                @rmdir($one);
+            }
+        }
+    }
+
 }

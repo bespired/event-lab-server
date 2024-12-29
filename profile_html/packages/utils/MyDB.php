@@ -69,6 +69,12 @@ class MyDB
 
     }
 
+    public function truncate($tableName)
+    {
+        $this->connect();
+        $this->conn->query("TRUNCATE TABLE `$tableName`");
+    }
+
     public function update($tableName, $slots, $whereis)
     {
 

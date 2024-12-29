@@ -1,0 +1,10 @@
+install
+> php php/createDB.php
+> php php/seedDB.php
+
+
+create fake users
+> php php/userDB.php
+
+create fake assets
+> php php/assetDB.php

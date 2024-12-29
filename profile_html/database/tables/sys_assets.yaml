@@ -13,11 +13,13 @@
         type:       name  # see types.
         mimetype:   name  # image, document, font, etc.
         version:    name
+        dimensions: name  # width x height
+        size:       name  # Kb Mb Gb
         url:        name  # url is name without version.
         name:       name  # name is url with version.
         label:      label
         tags:       large # json with tags.
-        deleted_at: timestamp
+        deleted_at: timestamp-null
 
     # seeds: assets
 
