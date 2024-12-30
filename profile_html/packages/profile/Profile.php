@@ -14,15 +14,18 @@ class Profile
 
         $this->db      = new MyDB();
         $this->project = $project;
+
     }
 
     public function list($router)
     {
         $project = $router->projectChar;
         $selects = [
-            'is_contact', 'visitcount', 'pagecount', 'firstvistcode', 'firstvistdate', 'firstdevice',
-            'firstcountry', 'lastvistcode', 'lastvistdate', 'lastdevice', 'created_at', 'role',
-            'email', 'firstname', 'lastname', 'country_code_1', 'country_name_1', 'state_1', 'city_1',
+            'p.handle', 'is_contact', 'visitcount', 'pagecount',
+            'firstvistcode', 'firstvistdate', 'firstdevice', 'firstcountry',
+            'lastvistcode', 'lastvistdate', 'lastdevice', 'created_at', 'role',
+            'email', 'firstname', 'lastname',
+            'country_code_1', 'country_name_1', 'state_1', 'city_1',
             'postal_1', 'latitude_1', 'longitude_1',
         ];
 
@@ -43,127 +46,70 @@ class Profile
         Response::success($results);
     }
 
-    // public function getAttributes()
-    // {
-    //     if ($this->attributes) {
-    //         return $this->attributes;
-    //     }
+    public function handle($router)
+    {
+        $project = $router->projectChar;
+        $handle  = $router->payload->profile;
 
-    //     $sql = "";
-    //     $sql .= "SELECT * FROM `sys_attributes` ";
-    //     $sql .= "WHERE `sys_attributes`.`project` = '$this->project'";
-    //     $sql .= "AND `sys_attributes`.`deleted_at` IS NULL";
+        $sql     = [];
+        $sql[]   = "SELECT * FROM `sys_attributes`";
+        $sql[]   = "WHERE ISNULL(`deleted_at`)";
+        $sql[]   = 'AND `table` = "accu_contacts"';
+        $mysql   = join(" ", $sql);
+        $attribs = $this->db->selectKey($mysql, 'column');
 
-    //     $attributes = $this->db->select($sql);
-    //     foreach ($attributes as $attribute) {
-    //         $this->attributes[$attribute['name']] = (object) $attribute;
-    //     }
+        // print_r($attribs);
 
-    // }
+        $visitor = null;
+        $contact = null;
+        $visits  = null;
 
-    // public function selectFrom($table)
-    // {
+        $profileSelects = [
+            'handle', 'cmne', 'is_contact', 'visitcount', 'pagecount',
+            'firstvistcode', 'firstvistdate', 'firstdevice', 'firstcountry',
+            'lastvistcode', 'lastvistdate', 'lastdevice', 'created_at',
+        ];
 
-    //     $selecting[] = "`$table`.`handle` as {$table}__handle";
-    //     foreach ($this->attributes as $attribute) {
-    //         $valid = ($attribute->table === $table);
-    //         if ($valid) {
-    //             $name        = str_replace('-', '_', $attribute->name);
-    //             $selecting[] = "`$table`.`$attribute->column` as $name";
-    //         }
-    //     }
+        $visitSelects = [
+            'handle', 'cmne', 'session', 'service', 'created_at', 'time',
+            'visitcode', 'visitdate', 'category', 'action', 'value', 'url',
+        ];
 
-    //     return $selecting;
+        $select = join(',', $profileSelects);
+        $sql    = [];
+        $sql[]  = "SELECT $select FROM `profiles`";
+        $sql[]  = "WHERE ISNULL(`deleted_at`)";
+        $sql[]  = "AND `handle` = \"$handle\"";
 
-    // }
+        $visitor = $this->db->first(join(" ", $sql));
 
-    // public function selectTable($table, $handle)
-    // {
-    //     $selects = join(", ", $this->selectFrom($table));
-    //     $sql     = "SELECT $selects FROM `tags` ";
-    //     $sql .= "WHERE `$table`.`profile` = '$handle' ";
-    //     $sql .= "AND `tags`.`project` = '$this->project' ";
+        if ((bool) $visitor['is_contact']) {
+            $sql   = [];
+            $sql[] = "SELECT * FROM `accu_contacts`";
+            $sql[] = "WHERE ISNULL(`deleted_at`)";
+            $sql[] = "AND `profile` = \"$handle\"";
+            $mysql = join(" ", $sql);
 
-    //     return $sql;
-    // }
+            // $contact = $this->db->first(join(" ", $sql));
 
-    // public function getProfileViaContact($key)
-    // {
+            $contact = $this->db->renamed($mysql, $attribs);
 
-    //     $this->getAttributes();
+        }
 
-    //     $profileSelect = $this->selectFrom('profiles');
-    //     $contactSelect = $this->selectFrom('accu_contacts');
+        $select = join(',', $visitSelects);
+        $sql    = [];
+        $sql[]  = "SELECT $select FROM `track_timelines`";
+        $sql[]  = "WHERE `profile` = \"$handle\"";
 
-    //     $selects = join(", ", array_merge($profileSelect, $contactSelect));
+        $visits = $this->db->select(join(" ", $sql));
 
-    //     $sql = "";
-    //     $sql .= "SELECT $selects FROM `contacts` ";
-    //     $sql .= "INNER JOIN `profiles` ON `accu_contacts`.`profile` = `profiles`.`handle`";
-    //     $sql .= "WHERE `accu_contacts`.`project` = '$this->project' ";
-    //     $sql .= "AND `accu_contacts`.`email` = '$key' ";
-    //     $sql .= "AND `profiles`.`deleted_at` IS NULL";
+        $result = [
+            'visitor' => $visitor,
+            'contact' => $contact,
+            'visits'  => $visits,
+        ];
 
-    //     $results = $this->db->first($sql);
-
-    //     // if no-one found...
-    //     // return null ?
-
-    //     $handle = $results['profiles__handle'];
-    //     $return = ['id' => $handle];
-
-    //     foreach ($results as $key => $value) {
-    //         if (str_starts_with($key, 'contact')) {
-    //             $names = explode("__", $key, 2);
-    //             $field = $names[1];
-
-    //             $return['contact'][$field] = $value;
-    //         }
-    //     }
-
-    //     //
-
-    //     $sql     = $this->selectTable('tags', $handle);
-    //     $results = $this->db->first($sql);
-
-    //     foreach ($results as $key => $value) {
-
-    //         if (str_starts_with($key, 'tag_')) {
-    //             $names = explode("__", $key, 2);
-    //             $field = $names[1];
-
-    //             $mne = 'tag--' . str_replace('_', '-', $field);
-
-    //             if (isset($this->attributes[$mne])) {
-    //                 $attr                  = $this->attributes[$mne];
-    //                 $name                  = $attr->name;
-    //                 $extra                 = $attr->extra;
-    //                 $return['tags'][$name] = [
-    //                     'handle'   => $attr->handle,
-    //                     'label'    => $attr->label,
-    //                     'cmne'     => $attr->cmne,
-    //                     'group'    => json_decode($extra)->group,
-    //                     'attached' => $value == '1' ? true : false,
-    //                     'value'    => $value,
-    //                 ];
-    //             } else {
-    //                 $return['tags'][$field] = $field . ' ' . $mne;
-    //             }
-
-    //         }
-    //     }
-
-    //     // $return['tags'] = $results;
-
-    //     $return['consents'] = [];
-    //     $return['journeys'] = [];
-    //     $return['timeline'] = [];
-
-    //     // $return['attributes'] = $this->attributes;
-
-    //     // print_r($results);
-
-    //     return $return;
-    // }
+        Response::success($result);
+    }
 
 }

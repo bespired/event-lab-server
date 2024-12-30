@@ -168,64 +168,30 @@ function createAsset($typename, $settings, $count)
         case "picture":
         case "email-image":
         case "image":
-            $extention = 'png';
+            $extention = rand(0, 1) < 0.5 ? 'png' : 'jpg';
             $name      = $typename . '-' . $count;
             echo "creating $name \n";
 
-            $png_image = imagecreate(640, 400);
-            imagecolorallocate($png_image, 15, 142, 210);
+            $x = round(rand(640, 800));
+            $y = round(rand(400, $x - 20));
 
-            $filename = sprintf('%s/%s/%s.%s', $root, $folder, $name, $extention);
-            imagepng($png_image, $filename);
-            imagedestroy($png_image);
-
+            thumb($typename, $root, $folder, $name, $extention, $x, $y);
             break;
+
         case "icon":
         case "logo":
         case "link":
             $extention = 'png';
             $name      = $typename . '-' . $count;
-            $x         = $typename !== 'link' ? 45 * $count : 135;
-            $y         = $typename !== 'link' ? 25 * $count : 90;
 
-            echo "creating $name \n";
-
+            $x = $typename !== 'link' ? 45 * $count : 135;
+            $y = $typename !== 'link' ? 25 * $count : 90;
             $x = $typename === 'icon' ? 150 : $x;
             $y = $typename === 'icon' ? 150 : $y;
 
-            $size = $x < 50 ? 10 : 12;
+            echo "creating $name \n";
 
-            $r = $typename === 'icon' ? rand(10, 255) : rand(15, 120);
-            $g = rand(140, 240);
-            $b = rand(200, 255);
-
-            // $png_image = imagecreate($x, $y);
-
-            $png_image = imagecreatetruecolor($x, $y);
-            imagesavealpha($png_image, true);
-
-            imagecolorallocate($png_image, $r, $g, $b);
-            $bgcolor = imagecolorallocatealpha($png_image, $r, $g, $b, 64);
-            imagefill($png_image, 0, 0, $bgcolor);
-
-            $white     = imagecolorallocate($png_image, 255, 255, 255);
-            $font_path = $root . '/font/' . 'abel-latin-400-normal.ttf';
-
-            $text  = "$x x $y";
-            $space = imagettfbbox($size, 0, $font_path, $text);
-
-            $width  = abs($space[4] - $space[0]);
-            $height = abs($space[5] - $space[1]);
-            $mx     = (int) ($x / 2 - $width / 2);
-            $my     = (int) ($y / 2 + $height / 2);
-            $my     = (int) ($y / 2);
-
-            imagettftext($png_image, $size, 0, $mx, $my, $white, $font_path, $text);
-            imagettftext($png_image, $size, 0, $mx, $my + 2 + $size, $white, $font_path, $typename);
-
-            $filename = sprintf('%s/%s/%s.%s', $root, $folder, $name, $extention);
-            imagepng($png_image, $filename);
-            imagedestroy($png_image);
+            thumb($typename, $root, $folder, $name, $extention, $x, $y);
 
             break;
         case "document":
@@ -310,6 +276,45 @@ function createAsset($typename, $settings, $count)
 #style-file     style-file           <=  in style folder
 #script-file    script-file          <=  in script folder
 #private        private-file         <=  route to file in private folder
+
+function thumb($typename, $root, $folder, $name, $extention, $x, $y)
+{
+
+    $size = $x < 50 ? 10 : 12;
+    $size = $x > 500 ? 18 : $size;
+
+    $r = $typename === 'icon' ? rand(10, 255) : rand(15, 120);
+    $g = rand(140, 240);
+    $b = rand(200, 255);
+
+    $png_image = imagecreatetruecolor($x, $y);
+    imagesavealpha($png_image, true);
+
+    imagecolorallocate($png_image, $r, $g, $b);
+    $bgcolor = imagecolorallocatealpha($png_image, $r, $g, $b, 64);
+    imagefill($png_image, 0, 0, $bgcolor);
+
+    $white     = imagecolorallocate($png_image, 255, 255, 255);
+    $font_path = $root . '/font/' . 'abel-latin-400-normal.ttf';
+
+    $text  = "$x x $y";
+    $space = imagettfbbox($size, 0, $font_path, $text);
+
+    $width  = abs($space[4] - $space[0]);
+    $height = abs($space[5] - $space[1]);
+    $mx     = (int) ($x / 2 - $width / 2);
+    $my     = (int) ($y / 2 + $height / 2);
+    $my     = (int) ($y / 2);
+
+    imagettftext($png_image, $size, 0, $mx, $my, $white, $font_path, $text);
+    imagettftext($png_image, $size, 0, $mx, $my + 2 + $size, $white, $font_path, $typename);
+
+    $filename = sprintf('%s/%s/%s.%s', $root, $folder, $name, $extention);
+    if ($extention === 'png') {imagepng($png_image, $filename);}
+    if ($extention === 'jpg') {imagejpeg($png_image, $filename, 95);}
+
+    imagedestroy($png_image);
+}
 
 function types()
 {

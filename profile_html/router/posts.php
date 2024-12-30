@@ -48,6 +48,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     include_once __DIR__ . '/../packages/profile/Profile.php';
                     (new Profile($router->projectChar))->list($router);
                     break;
+                case 'handle':
+                    include_once __DIR__ . '/../packages/profile/Profile.php';
+                    (new Profile($router->projectChar))->handle($router);
+                    break;
             }
 
             break;

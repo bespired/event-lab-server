@@ -11,6 +11,7 @@ class Asset
     public function __construct($project)
     {
         include_once __DIR__ . "/../utils/MyDB.php";
+        include_once __DIR__ . "/../utils/MyCurl.php";
         include_once __DIR__ . "/../utils/Response.php";
 
         $this->db      = new MyDB();
@@ -38,6 +39,10 @@ class Asset
     {
         $project   = $router->projectChar;
         $assetType = $this->singular($router->payload->assetType);
+
+        if ($assetType === 'font-glyph') {
+            Response::success($this->glyphs());
+        }
 
         $selects = [
             'handle', 'cmne', 'type', 'mimetype',
@@ -69,6 +74,38 @@ class Asset
             return $plural;
         }
         return $this->singulars[$plural];
+    }
+
+    private function glyphs()
+    {
+
+        $response = MyCurl::assets('glyphs');
+
+        $list = [];
+        if ($response) {
+            $files = json_decode($response);
+
+            foreach ($files as $file) {
+                $handle = sprintf('%s%s-asse-%s',
+                    $this->project, 'svg01',
+                    substr(str_replace('-', '', $file), 0, 9),
+                );
+
+                $list[] = [
+                    'handle'   => $handle,
+                    'cmne'     => 'ASFG',
+                    'type'     => 'glyph',
+                    'mimetype' => 'image/svg',
+                    'version'  => 1,
+                    'url'      => "/assets/glyph/$file.svg",
+                    'name'     => $file . '--1',
+                    'label'    => ucfirst(str_replace('-', ' ', $file)),
+                    'tags'     => ['svg', 'glyph', 'font'],
+                ];
+            }
+        }
+        return $list;
+
     }
 
 }

@@ -105,6 +105,15 @@ class MyDB
 
     }
 
+    public function selectKey($sql, $key)
+    {
+        $reads = $this->select($sql);
+        foreach ($reads as $row) {
+            $rows[$row[$key]] = $row;
+        }
+        return $rows;
+    }
+
     public function select($sql)
     {
         $this->connect();
@@ -121,6 +130,27 @@ class MyDB
 
         return $rows;
 
+    }
+
+    public function renamed($sql, $attr)
+    {
+
+        $rows = $this->first($sql);
+
+        foreach ($rows as $key => $row) {
+            if (str_starts_with($key, 'attr_')) {
+                if (isset($attr[$key])) {
+                    $named = $attr[$key]['name'];
+                    $named = explode("--", $named)[1];
+
+                    $rows[$named] = $row;
+                }
+                unset($rows[$key]);
+
+            }
+
+        }
+        return $rows;
     }
 
     public function first($sql)
