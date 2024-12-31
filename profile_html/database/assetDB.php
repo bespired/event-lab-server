@@ -218,8 +218,10 @@ function createAsset($typename, $settings, $count)
             $filename = sprintf('%s/%s/%s.%s', $root, $folder, $name, $extention);
             file_put_contents($filename, $font);
 
-            // https://github.com/teicee/php-woff-converter/blob/main/README.md
+            // // https://github.com/teicee/php-woff-converter/blob/main/README.md
             Woff::toTTF($filename);
+
+            thumb('font-file', $root, $folder, $name, 'png', 640, 480, $filename);
 
             break;
 
@@ -277,7 +279,7 @@ function createAsset($typename, $settings, $count)
 #script-file    script-file          <=  in script folder
 #private        private-file         <=  route to file in private folder
 
-function thumb($typename, $root, $folder, $name, $extention, $x, $y)
+function thumb($typename, $root, $folder, $name, $extention, $x, $y, $fontfile = null)
 {
 
     $size = $x < 50 ? 10 : 12;
@@ -286,18 +288,30 @@ function thumb($typename, $root, $folder, $name, $extention, $x, $y)
     $r = $typename === 'icon' ? rand(10, 255) : rand(15, 120);
     $g = rand(140, 240);
     $b = rand(200, 255);
+    $t = 64;
+
+    $text      = "$x x $y";
+    $font_path = $root . '/font/' . 'abel-latin-400-normal.ttf';
+
+    if ($typename === 'font-file') {
+        $r         = 153;
+        $g         = 180;
+        $b         = 76;
+        $text      = "ABCDEFGHIJKLM";
+        $font_path = $fontfile;
+        $t         = 127;
+    }
 
     $png_image = imagecreatetruecolor($x, $y);
     imagesavealpha($png_image, true);
 
     imagecolorallocate($png_image, $r, $g, $b);
-    $bgcolor = imagecolorallocatealpha($png_image, $r, $g, $b, 64);
+    $bgcolor = imagecolorallocatealpha($png_image, $r, $g, $b, $t);
     imagefill($png_image, 0, 0, $bgcolor);
 
-    $white     = imagecolorallocate($png_image, 255, 255, 255);
-    $font_path = $root . '/font/' . 'abel-latin-400-normal.ttf';
+    $white = imagecolorallocate($png_image, 255, 255, 255);
+    $black = imagecolorallocate($png_image, 0, 0, 0);
 
-    $text  = "$x x $y";
     $space = imagettfbbox($size, 0, $font_path, $text);
 
     $width  = abs($space[4] - $space[0]);
@@ -306,14 +320,34 @@ function thumb($typename, $root, $folder, $name, $extention, $x, $y)
     $my     = (int) ($y / 2 + $height / 2);
     $my     = (int) ($y / 2);
 
-    imagettftext($png_image, $size, 0, $mx, $my, $white, $font_path, $text);
-    imagettftext($png_image, $size, 0, $mx, $my + 2 + $size, $white, $font_path, $typename);
+    if ($typename === 'font-file') {
+        $size  = 48;
+        $texts = [
+            "ABCDEFGHIJKLM",
+            "NOPQRSTUVWXYZ",
+            "abcdefghijklm",
+            "nopqrstuvwxyz",
+            "1234567890",
+        ];
+        $neg = -2.5 * $size;
+        foreach ($texts as $idx => $line) {
+            $space  = imagettfbbox($size, 0, $font_path, $line);
+            $width  = abs($space[4] - $space[0]);
+            $width2 = round($width / 2);
+            $offs   = $neg + ($size + 8) * $idx;
+            imagettftext($png_image, $size, 0, 320 - $width2, $my + $offs, $black, $font_path, $line);
+        }
 
+    } else {
+        imagettftext($png_image, $size, 0, $mx, $my, $white, $font_path, $text);
+        imagettftext($png_image, $size, 0, $mx, $my + 2 + $size, $white, $font_path, $typename);
+    }
     $filename = sprintf('%s/%s/%s.%s', $root, $folder, $name, $extention);
     if ($extention === 'png') {imagepng($png_image, $filename);}
     if ($extention === 'jpg') {imagejpeg($png_image, $filename, 95);}
 
     imagedestroy($png_image);
+
 }
 
 function types()
@@ -345,7 +379,8 @@ function removeOldInstall($db)
         $all = glob($root . $depth);
 
         foreach ($all as $one) {
-            if (is_file($one)) {
+            $isIndex = str_ends_with($one, 'index.php');
+            if (is_file($one) && (! $isIndex)) {
                 @unlink($one);
             }
             if (is_dir($one)) {
