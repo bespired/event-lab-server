@@ -109,7 +109,8 @@ class MyDB
     {
         $reads = $this->select($sql);
         foreach ($reads as $row) {
-            $rows[$row[$key]] = $row;
+            $rows[$row[$key]]        = $row;
+            $rows[$row[$key]]['key'] = explode('--', $row['name'])[1];
         }
         return $rows;
     }

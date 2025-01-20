@@ -1,0 +1,53 @@
+---
+    id:         (auto)
+    handle:     (auto)
+    owner:      (contact:joeri@bespired.nl)
+    project:    a
+    cmne:       FMLY
+    type:       layout
+    name:       "12:12:12"
+    label:      Full width
+    data:       '[["12"], ["12"], ["12"]]'
+---
+    id:         (auto)
+    handle:     (auto)
+    owner:      (contact:joeri@bespired.nl)
+    project:    a
+    cmne:       FMLY
+    type:       layout
+    name:       "6-6:6-6:12;12"
+    label:      Half width
+    data:       '[["6-6"], ["6-6"], ["12","12"]]'
+---
+    id:         (auto)
+    handle:     (auto)
+    owner:      (contact:joeri@bespired.nl)
+    project:    a
+    cmne:       FMLY
+    type:       layout
+    name:       "4-4-4:6-6;12:12;12;12"
+    label:      Third width
+    data:       '[["4-4-4"], ["6-6", "12"], ["12","12","12"]]'
+---
+    id:         (auto)
+    handle:     (auto)
+    owner:      (contact:joeri@bespired.nl)
+    project:    a
+    cmne:       FMLY
+    type:       layout
+    name:       "3-3-3-3:6-6;6-6:12;12;12;12"
+    label:      Fourth width
+    data:       '[["3-3-3-3"], ["6-6", "6-6"], ["12","12","12","12"]]'
+---
+    id:         (auto)
+    handle:     (auto)
+    owner:      (contact:joeri@bespired.nl)
+    project:    a
+    cmne:       FMLY
+    type:       layout
+    name:       "8-4;10:6;12;8"
+    label:      Input width
+    data:       '[["8-4"], ["12", "R-6"], ["12","R-8"]]'
+#                { id: '12:12:12'   ,   cast: [['12'],  ['12'],  ['12']] },
+#                { id: '6-6:6-6:12;12', cast: [['6-6'], ['6-6'], ['12','12']] } ,
+#                { id: '4-4-4:6-6;12:12;12;12', cast: [['6-6'], ['6-6'], ['12','12']] } ,

@@ -46,23 +46,42 @@ class Profile
         Response::success($results);
     }
 
+    private function contact_attributes()
+    {
+        $sql   = [];
+        $sql[] = "SELECT * FROM `sys_attributes`";
+        $sql[] = "WHERE ISNULL(`deleted_at`)";
+        $sql[] = 'AND `table` = "accu_contacts"';
+        $mysql = join(" ", $sql);
+        return $this->db->selectKey($mysql, 'column');
+    }
+
+    private function visit_attributes()
+    {
+        $sql   = [];
+        $sql[] = "SELECT * FROM `sys_globals`";
+        $sql[] = "WHERE ISNULL(`deleted_at`)";
+        $sql[] = 'AND `table` = "track_timelines"';
+        $sql[] = 'AND `timeline` = "page--visit"';
+        $mysql = join(" ", $sql);
+
+        return $this->db->selectKey($mysql, 'column');
+    }
+
     public function handle($router)
     {
         $project = $router->projectChar;
         $handle  = $router->payload->profile;
 
-        $sql     = [];
-        $sql[]   = "SELECT * FROM `sys_attributes`";
-        $sql[]   = "WHERE ISNULL(`deleted_at`)";
-        $sql[]   = 'AND `table` = "accu_contacts"';
-        $mysql   = join(" ", $sql);
-        $attribs = $this->db->selectKey($mysql, 'column');
+        $attribs = $this->contact_attributes();
 
         // print_r($attribs);
 
         $visitor = null;
         $contact = null;
         $visits  = null;
+        $devices = null;
+        $session = null;
 
         $profileSelects = [
             'handle', 'cmne', 'is_contact', 'visitcount', 'pagecount',
@@ -73,6 +92,13 @@ class Profile
         $visitSelects = [
             'handle', 'cmne', 'session', 'service', 'created_at', 'time',
             'visitcode', 'visitdate', 'category', 'action', 'value', 'url',
+            'attr_1', 'attr_2', 'attr_3', 'attr_4', 'attr_5',
+        ];
+
+        $deviceSelects = [
+            'hash', 'is_bot', 'mozilla', 'browser', 'browser_engine_version',
+            'browser_version', 'like_gecko', 'family', 'sub_family', 'sub_version',
+            'platform', 'os', 'os_variant', 'device', 'device_version', 'locale',
         ];
 
         $select = join(',', $profileSelects);
@@ -90,10 +116,7 @@ class Profile
             $sql[] = "AND `profile` = \"$handle\"";
             $mysql = join(" ", $sql);
 
-            // $contact = $this->db->first(join(" ", $sql));
-
             $contact = $this->db->renamed($mysql, $attribs);
-
         }
 
         $select = join(',', $visitSelects);
@@ -103,10 +126,38 @@ class Profile
 
         $visits = $this->db->select(join(" ", $sql));
 
+        if ($visits) {
+            $visitAttr = $this->visit_attributes();
+
+            $hash    = [];
+            $session = [];
+            foreach ($visits ?? [] as $visit) {
+                $key  = $visit['attr_3'];
+                $sess = $visit['session'];
+
+                $hash[$key]     = $key;
+                $session[$sess] = $visit['visitdate'];
+            }
+
+            $select = join(',', $deviceSelects);
+            $hashes = "'" . join("', '", array_keys($hash)) . "'";
+            $sql    = [];
+            $sql[]  = "SELECT $select FROM `sys_browsers`";
+            $sql[]  = "WHERE `hash` IN ($hashes)";
+
+            $keyed = $this->db->select(join(" ", $sql));
+            foreach ($keyed as $device) {
+                $devices[$device['hash']] = $device;
+            }
+
+        }
+
         $result = [
-            'visitor' => $visitor,
-            'contact' => $contact,
-            'visits'  => $visits,
+            'visitor'  => $visitor,
+            'contact'  => $contact,
+            'visits'   => $visits,
+            'devices'  => $devices,
+            'sessions' => $session,
         ];
 
         Response::success($result);

@@ -1,0 +1,22 @@
+---
+    label: Projects
+    dependancy: accu_contacts
+
+    tablename: sys_forms
+
+    columns:
+        id:         incremental
+        handle:     handle
+        owner:      handle-null
+        project:    base1
+        cmne:       mnemonic
+        type:       name  # layout, fields, design
+        name:       name
+        label:      label
+        data:       large
+        deleted_at: timestamp-null
+
+    seeds: forms
+
+
+#fixed data on the forms, like layout, fields, designs

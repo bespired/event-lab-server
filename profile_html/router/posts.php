@@ -29,6 +29,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             (new Lab())->handle($router);
             break;
 
+        case 'formbuilder':
+            $router->protected();
+            switch ($router->action) {
+                case 'builder':
+                    include_once __DIR__ . '/../packages/form/FormBuilder.php';
+                    (new FormBuilder($router->projectChar))->builder($router);
+                    break;
+            }
+            break;
+
         case 'assets':
             $router->protected();
 
@@ -38,7 +48,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     (new Asset($router->projectChar))->list($router);
                     break;
             }
-
             break;
         case 'profiles':
             $router->protected();
